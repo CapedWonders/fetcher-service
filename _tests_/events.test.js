@@ -527,14 +527,14 @@ describe('extractFormatSource', function() {
 //   }); 
 
 
-  xit('should call format source if the source does not exist yet', async function(done) {
+//   xit('should call format source if the source does not exist yet', async function(done) {
     
-  });
+//   });
 
-  xit('should not call format source if the source already exists', async function(done) {
+//   xit('should not call format source if the source already exists', async function(done) {
    
-  }); 
-});
+//   }); 
+// });
 
 xdescribe('calculateBias', function() {
 
