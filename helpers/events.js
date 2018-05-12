@@ -2,7 +2,7 @@
 const axios = require('axios');
 
 //db models
-const db = require('../models/index.js');
+const db = require('../db/models/index.js');
 
 //lodash
 const _ = require('lodash');
@@ -378,7 +378,7 @@ const dailyFetch = async() => {
   console.log('fetched!');
 };
 
-const relvanceCheck = async() => {
+const relevanceCheck = async() => {
 
   //TODO: check to see if any previously unsaved events are now relevant
 
@@ -387,7 +387,7 @@ const relvanceCheck = async() => {
 };
 
 module.exports = {
-  associateConceptsOrSubcategories,
+  associateEventConceptsOrSubcategories,
   buildSaveConcept,
   buildSaveSubcategory,
   buildSaveEvent,

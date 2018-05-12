@@ -1,4 +1,4 @@
-const db = require('../db/models/index');
+const db = require('../db/models/index.js');
 
 const bodyParser = require('body-parser');
 const express = require('express');
