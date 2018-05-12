@@ -14,6 +14,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //TODO cron job to check DB for newly relevant events
 
-daiyFetch();
+// daiyFetch();
 
 app.listen(3000, () => console.log('Listening on port 3000!'));
