@@ -66,9 +66,9 @@ describe('formatConcept', function() {
 
 describe('formatSubcategory', function() {
 
-  beforeEach(async() => { 
-    await db.clearDB();
-  });
+  // beforeEach(async() => { 
+  //   await db.clearDB();
+  // });
 
   it('should return an instance of sequelize subcategory model', function(done) {
     let result = formatSubcategory(lambda2[0].categories[0]);
