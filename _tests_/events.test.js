@@ -7,42 +7,42 @@ const db = require('../db/models/index.js');
 const { associateEventConceptsOrSubcategories, buildSaveConcept, buildSaveSubcategory, buildSaveEvent, formatSubcategory,
   formatConcept, formatEvent, formatArticle, extractReleventEvents, buildSaveArticle, extractFormatSource } = require('../helpers/events.js');
 
-// describe('formatEvent', function() {
-//   it('should return an instance of sequelize event model', function(done) {
-//     let result = formatEvent(lambda2[0]);
+describe('formatEvent', function() {
+  it('should return an instance of sequelize event model', function(done) {
+    let result = formatEvent(lambda2[0]);
    
-//     expect(result).toBeInstanceOf(db.Event);
-//     expect(result._options.isNewRecord).toBe(true);
-//     expect(result.dataValues).toBeTruthy();
-//     done();
-//   });
+    expect(result).toBeInstanceOf(db.Event);
+    expect(result._options.isNewRecord).toBe(true);
+    expect(result.dataValues).toBeTruthy();
+    done();
+  });
 
-//   it('should have a uri category', function(done) {
-//     let result = formatEvent(lambda2[1]);
+  it('should have a uri category', function(done) {
+    let result = formatEvent(lambda2[1]);
     
-//     expect(result.dataValues).toHaveProperty('uri');
-//     expect(typeof result.dataValues.uri).toBe('string');
-//     expect(result.dataValues.uri).toBeTruthy();
-//     done();
-//   });
+    expect(result.dataValues).toHaveProperty('uri');
+    expect(typeof result.dataValues.uri).toBe('string');
+    expect(result.dataValues.uri).toBeTruthy();
+    done();
+  });
 
-//   it('should have a title', function(done) {
-//     let result = formatEvent(lambda2[2]);
+  it('should have a title', function(done) {
+    let result = formatEvent(lambda2[2]);
 
-//     expect(result.dataValues).toHaveProperty('title');
-//     expect(typeof result.dataValues.title).toBe('string');
-//     done();
-//   });
+    expect(result.dataValues).toHaveProperty('title');
+    expect(typeof result.dataValues.title).toBe('string');
+    done();
+  });
 
-//   it('should ignore unnecessary data returned from Event Registry', function(done) {
-//     let result = formatEvent(lambda2[3]);
+  it('should ignore unnecessary data returned from Event Registry', function(done) {
+    let result = formatEvent(lambda2[3]);
 
-//     expect(result).not.toHaveProperty('location');
-//     expect(result).not.toHaveProperty('categories');
-//     expect(result).not.toHaveProperty('wgt');
-//     done();
-//   });
-// });
+    expect(result).not.toHaveProperty('location');
+    expect(result).not.toHaveProperty('categories');
+    expect(result).not.toHaveProperty('wgt');
+    done();
+  });
+});
 
 // describe('formatConcept', function() {
 //   it('should return an instance of sequelize concept model', function(done) {
