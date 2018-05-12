@@ -1,0 +1,15 @@
+{
+  "name": "articlesbysource",
+  "version": "1.0.0",
+  "description": "Gets articles from particular news sources",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "eventregistry": "^1.2.1",
+    "moment": "^2.22.1"
+  }
+}

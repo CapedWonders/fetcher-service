@@ -1,0 +1,14 @@
+{
+  "name": "articles",
+  "version": "1.0.0",
+  "description": "fetches article info by event id from Event Registry",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "eventregistry": "^1.2.1"
+  }
+}
