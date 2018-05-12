@@ -7,6 +7,8 @@ const db = require('../db/models/index.js');
 const { associateEventConceptsOrSubcategories, buildSaveConcept, buildSaveSubcategory, buildSaveEvent, formatSubcategory,
   formatConcept, formatEvent, formatArticle, extractReleventEvents, buildSaveArticle, extractFormatSource } = require('../helpers/events.js');
 
+afterAll(() => db.sequelize.close());
+
 describe('formatEvent', function() {
   it('should return an instance of sequelize event model', function(done) {
     let result = formatEvent(lambda2[0]);
