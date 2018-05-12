@@ -8,6 +8,7 @@ var db        = {};
 var seed      = require('../../_tests_/sampleData.js');
 
 const { db_name, db_user, db_password, db_host } = process.env;
+
 const sequelize = new Sequelize(db_name, db_user, db_password, {
   dialect: 'mysql',
   host: db_host,
