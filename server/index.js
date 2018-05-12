@@ -3,7 +3,7 @@ const db = require('../db/models/index');
 const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
-const { dailyFetch, }
+const { dailyFetch } = require('../helpers/events');
 
 const wrap = fn => (...args) => fn(...args).catch(args[2]);
 
