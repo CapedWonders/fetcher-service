@@ -509,7 +509,7 @@ describe('buildASaveArticle', function() {
     done();
   });
 
-  it('should associate the source to the article', async function(done) {
+  xit('should associate the source to the article', async function(done) {
     expect.assertions(5);
     const test = lambda4.articles.fox[0];
     const saved = await buildSaveArticle(test);
