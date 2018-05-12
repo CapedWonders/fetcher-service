@@ -25,12 +25,23 @@ fs
     db[model.name] = model;
   });
 
-Object.keys(db).forEach(async (modelName) => {
-  if (db[modelName].associate) {
-    await db[modelName].associate(db);
-    console.log('associated: ', modelName)
+const associate = async() => {
+  for (const model in db) {
+    if (db[model].associate) {
+      await db[model].associate(db);
+      console.log('associated: ', model);
+    }      
   }
-});
+}
+
+associate();
+
+// Object.keys(db).forEach(async (modelName) => {
+//   if (db[modelName].associate) {
+//     await db[modelName].associate(db);
+//     console.log('associated: ', modelName)
+//   }
+// });
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
