@@ -44,25 +44,25 @@ describe('formatEvent', function() {
   });
 });
 
-// describe('formatConcept', function() {
-//   it('should return an instance of sequelize concept model', function(done) {
-//     let result = formatConcept(lambda2[0].concepts[0]);
+describe('formatConcept', function() {
+  it('should return an instance of sequelize concept model', function(done) {
+    let result = formatConcept(lambda2[0].concepts[0]);
 
-//     expect(result).toBeInstanceOf(db.Concept);
-//     expect(result._options.isNewRecord).toBe(true);
-//     expect(result.dataValues).toBeTruthy();
-//     done();
-//   });
+    expect(result).toBeInstanceOf(db.Concept);
+    expect(result._options.isNewRecord).toBe(true);
+    expect(result.dataValues).toBeTruthy();
+    done();
+  });
 
-//   it('should have a uri category', function(done) {
-//     let result = formatConcept(lambda2[0].concepts[1]);
+  it('should have a uri category', function(done) {
+    let result = formatConcept(lambda2[0].concepts[1]);
 
-//     expect(result.dataValues).toHaveProperty('uri');
-//     expect(typeof result.dataValues.uri).toBe('string');
-//     expect(result.dataValues.uri).toBeTruthy();
-//     done();
-//   });
-// });
+    expect(result.dataValues).toHaveProperty('uri');
+    expect(typeof result.dataValues.uri).toBe('string');
+    expect(result.dataValues.uri).toBeTruthy();
+    done();
+  });
+});
 
 // describe('formatSubcategory', function() {
 
