@@ -49,7 +49,8 @@ db.Sequelize = Sequelize;
 db.clearDB = async() => {
   await sequelize.query('SET FOREIGN_KEY_CHECKS = 0', {raw: true});
   await sequelize.sync({force: true});
-  await db.Category.bulkCreate(seed.sampleCategories);   
+  await db.Category.bulkCreate(seed.sampleCategories);  
+  await sequelize.close(); 
 };
 
 module.exports = db;
