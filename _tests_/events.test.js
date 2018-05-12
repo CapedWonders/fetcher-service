@@ -64,41 +64,41 @@ describe('formatConcept', function() {
   });
 });
 
-// describe('formatSubcategory', function() {
+describe('formatSubcategory', function() {
 
-//   beforeEach(() => { 
-//     return db.clearDB();
-//   });
+  beforeEach(() => { 
+    return db.clearDB();
+  });
 
-//   it('should return an instance of sequelize subcategory model', function(done) {
-//     let result = formatSubcategory(lambda2[0].categories[0]);
+  it('should return an instance of sequelize subcategory model', function(done) {
+    let result = formatSubcategory(lambda2[0].categories[0]);
 
-//     expect(result).toBeInstanceOf(db.Subcategory);
-//     expect(result._options.isNewRecord).toBe(true);
-//     expect(result.dataValues).toBeTruthy();
-//     done();
-//   });
+    expect(result).toBeInstanceOf(db.Subcategory);
+    expect(result._options.isNewRecord).toBe(true);
+    expect(result.dataValues).toBeTruthy();
+    done();
+  });
 
-//   it('should have a uri category', function(done) {
-//     let result = formatSubcategory(lambda2[0].categories[1]);
+  it('should have a uri category', function(done) {
+    let result = formatSubcategory(lambda2[0].categories[1]);
 
-//     expect(result.dataValues).toHaveProperty('uri');
-//     expect(typeof result.dataValues.uri).toBe('string');
-//     expect(result.dataValues.uri).toBeTruthy();
-//     expect(result.dataValues.uri).toContain('dmoz');
-//     done();
-//   });
+    expect(result.dataValues).toHaveProperty('uri');
+    expect(typeof result.dataValues.uri).toBe('string');
+    expect(result.dataValues.uri).toBeTruthy();
+    expect(result.dataValues.uri).toContain('dmoz');
+    done();
+  });
 
-//   it('should relate to a higher level Category from the dmoz system', async function(done) {
-//     let result = formatSubcategory(lambda2[0].categories[2]);
-//     let base = result.dataValues.uri.split('/')[1];
-//     let category = await db.Category.find({where: {name: base}});
+  it('should relate to a higher level Category from the dmoz system', async function(done) {
+    let result = formatSubcategory(lambda2[0].categories[2]);
+    let base = result.dataValues.uri.split('/')[1];
+    let category = await db.Category.find({where: {name: base}});
   
-//     expect(category.dataValues.name).not.toContain('dmoz');
-//     expect(base).toEqual(category.dataValues.name);
-//     done();
-//   });
-// });
+    expect(category.dataValues.name).not.toContain('dmoz');
+    expect(base).toEqual(category.dataValues.name);
+    done();
+  });
+});
 
 // describe('buildSaveConcept', function() {
 //   beforeEach(() => {
