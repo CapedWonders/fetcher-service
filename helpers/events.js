@@ -11,7 +11,7 @@ const _ = require('lodash');
 const moment = require('moment');
 
 //lambda uris
-const { eventUriLambda, eventInfoLamnda, articlesBySourceLambda, articlesByEventLambda } = process.env;
+const { eventUriLambda, eventInfoLambda, articlesBySourceLambda, articlesByEventLambda } = process.env;
 
 /* 
    ********************************************************************* 
