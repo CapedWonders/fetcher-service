@@ -314,7 +314,7 @@ const getUris = async() => {
 //after saving, checks whether there are any saved unassociated articles in our DB
 const getEventInfo = async(uris) => {
   let unsaved = await findUnsavedEvents(uris);
-  const response = await axios.post(eventInfoLamnda, { uris: unsaved });
+  const response = await axios.post(eventInfoLambda, { uris: unsaved });
 
   for (const event of response.data) {
     let current = await buildSaveEvent(event); 

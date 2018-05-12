@@ -1,0 +1,37 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: circleci/node:7.10
+      - image: circleci/mysql:5.6.39
+    environment:
+      db_name: "circle_test"
+      db_user: "root"
+      db_password: ""
+      db_host: "localhost"
+    steps:
+      - checkout
+      - run: npm install
+      - run: npm test
+  deploy:
+    machine: true
+    steps:
+      - checkout
+      - run: ssh ec2-user@ec2-18-188-194-141.us-east-2.compute.amazonaws.com "cd fetcher-service && git reset --hard && git fetch origin && git checkout master && git reset --hard origin/master && npm install && pm2 restart server"
+workflows:
+  version: 2
+  test-only:
+    jobs:
+      - test
+  test-and-deploy:
+    jobs:
+      - test:
+          filters:
+            branches:
+              only: master
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
