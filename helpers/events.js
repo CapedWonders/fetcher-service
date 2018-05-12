@@ -139,7 +139,7 @@ const formatArticle = (article) => {
     url: article.url,
     title: article.title,
     body: article.body,
-    date: article.date,
+    date: moment(article.date, "YYYY-MM-DD"),
     eventUri: article.eventUri,
     image: article.image,
   });
@@ -166,6 +166,7 @@ const calculateBias = (sourceTitle) => {
 const buildSaveArticle = async (article) => {
 
   if (article.eventUri === null) {
+    console.log("this article has no associated event");
     return;
   }
   

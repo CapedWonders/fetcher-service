@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     url: DataTypes.STRING,
     title: DataTypes.STRING,
     body: DataTypes.STRING,
-    date: DataTypes.STRING,
+    date: DataTypes.DATE,
     image: DataTypes.STRING,
     eventUri: DataTypes.STRING,
   }, {});

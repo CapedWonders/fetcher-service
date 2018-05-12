@@ -1,3 +1,42 @@
+const sampleCategories = [
+  {
+    name: 'Business',
+  },
+  {
+    name: 'Arts',
+  },
+  {
+    name: 'Computers',
+  },
+  {
+    name: 'Games',
+  },
+  {
+    name: 'Health',
+  },
+  {
+    name: 'Home',
+  },
+  {
+    name: 'Recreation',
+  },
+  {
+    name: 'Reference',
+  },
+  {
+    name: 'Science',
+  },
+  {
+    name: 'Shopping',
+  },
+  {
+    name: 'Society',
+  },
+  {
+    name: 'Sports',
+  },
+];
+
 const lambda1 = {
   "message": "success",
   "data": {
@@ -30577,4 +30616,4 @@ const lambda4 = {
 
 
 
-module.exports = { lambda1, relevantEvents, lambda2, lambda3, lambda4 };
+module.exports = { lambda1, relevantEvents, lambda2, lambda3, lambda4, sampleCategories };

@@ -5,6 +5,7 @@ var path      = require('path');
 var Sequelize = require('sequelize');
 var basename  = path.basename(__filename);
 var db        = {};
+var seed      = require('../../_tests_/sampleData.js');
 
 const { db_name, db_user, db_password, db_host } = process.env;
 const sequelize = new Sequelize(db_name, db_user, db_password, {
@@ -38,7 +39,7 @@ db.clearDB = () => {
   return sequelize
   .query('SET FOREIGN_KEY_CHECKS = 0', {raw: true}).then(() => {
     return sequelize.sync({force: true}).then(async () => {
-        await Category.bulkCreate(seed.sampleCategories);
+        await db.Category.bulkCreate(seed.sampleCategories);
     }).catch(err => console.log("sync err: ", err));
   }).catch(err => console.log("query err: ", err));
 };

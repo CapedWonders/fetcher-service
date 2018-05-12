@@ -1,16 +1,16 @@
 //fake data lambda1=eventUris, lambda2=events, lambda3=articles by event, lambda4=articles by source
-const { lambda1, lambda2, lambda3, lambda3 } = require('./sampleData.js');
+const { lambda1, lambda2, lambda3, lambda4 } = require('./sampleData.js');
 
 //db models
-const { db } = require('../db/models/index.js');
+const db = require('../db/models/index.js');
 
-const { associateConceptsOrSubcategories, buildSaveConcept, buildSaveSubcategory, buildSaveEvent, formatSubcategory,
+const { associateEventConceptsOrSubcategories, buildSaveConcept, buildSaveSubcategory, buildSaveEvent, formatSubcategory,
   formatConcept, formatEvent, formatArticle, extractReleventEvents, buildSaveArticle, extractFormatSource } = require('../helpers/events.js');
 
 describe('formatEvent', function() {
   it('should return an instance of sequelize event model', function(done) {
     let result = formatEvent(lambda2[0]);
-
+   
     expect(result).toBeInstanceOf(db.Event);
     expect(result._options.isNewRecord).toBe(true);
     expect(result.dataValues).toBeTruthy();
@@ -123,7 +123,7 @@ describe('buildSaveConcept', function() {
   it('should save concepts whose uri contains nonenglish chars', async function(done) {
     expect.assertions(4)
 
-    const test = lambda2[5].concepts[0];
+    const test = {uri:'test ćoncept'};
     const saved = await buildSaveConcept(test);
     expect(saved).toBeTruthy();
 
@@ -166,7 +166,7 @@ describe('buildSaveEvent', function() {
     
     await buildSaveEvent(lambda2[4]);
    
-    await db.sEvent.find({where:{}}).then(event => {
+    await db.Event.find({where:{}}).then(event => {
       expect(event).toBeTruthy();
       id = event.id;
     });  
@@ -254,7 +254,7 @@ describe('buildSaveSubcategory', function() {
   });
 });
 
-describe('associateConceptsOrSubcategories', function() {
+describe('associateEventConceptsOrSubcategories', function() {
   beforeEach(async() => {
     return db.clearDB().then(async() => {
       const testEvent = lambda2[6];
@@ -274,7 +274,7 @@ describe('associateConceptsOrSubcategories', function() {
       expect(result.length).toBe(0);
     });
 
-    await associateConceptsOrSubcategories(testEvent.concepts, 'concept', testEvent.uri);
+    await associateEventConceptsOrSubcategories(testEvent.concepts, 'concept', testEvent.uri);
 
     await db.Concept.findAll({where:{}}).then(result => {
       expect(result.length).toBeGreaterThan(0);
@@ -293,7 +293,7 @@ describe('associateConceptsOrSubcategories', function() {
     const concepts = await event.getConcepts();
     expect(concepts.length).toBe(0);
 
-    await associateConceptsOrSubcategories(testConcepts, 'concept', lambda2[6].uri);
+    await associateEventConceptsOrSubcategories(testConcepts, 'concept', lambda2[6].uri);
 
     const savedConcepts = await event.getConcepts();
     expect(savedConcepts.length).toBeGreaterThan(0);
@@ -311,7 +311,7 @@ describe('associateConceptsOrSubcategories', function() {
     await db.Subcategory.findAll({where:{}}).then(result => {
       expect(result.length).toBe(0);
     });
-    await associateConceptsOrSubcategories(testEvent.categories, 'subcategory', testEvent.uri);
+    await associateEventConceptsOrSubcategories(testEvent.categories, 'subcategory', testEvent.uri);
     await db.Subcategory.findAll({where:{}}).then(result => {
       expect(result.length).toBeGreaterThan(0);
       expect(result.length).toEqual(testEvent.categories.length);
@@ -330,7 +330,7 @@ describe('associateConceptsOrSubcategories', function() {
     const subcategories = await event.getSubcategories();
     expect(subcategories.length).toBe(0);
 
-    await associateConceptsOrSubcategories(testCategories, 'subcategory', lambda2[6].uri);
+    await associateEventConceptsOrSubcategories(testCategories, 'subcategory', lambda2[6].uri);
 
     const savedSubcategories = await event.getSubcategories();
 
@@ -462,29 +462,45 @@ describe('buildASaveArticle', function() {
   it('should save a formatted article if it does not exist in DB', async function(done) {
     expect.assertions(3);
 
-    const test = event1Articles[1];
-    const before = await Article.findAll({where: {}});
+    const test = lambda4.articles.fox[0];
+    const before = await db.Article.findAll({where: {}});
     expect(before.length).toEqual(0);
+    console.log(test.uri)
 
     const saved = await buildSaveArticle(test);
-    const after = await Article.find({where:{uri: test.uri}});
+    const after = await db.Article.find({where:{uri: test.uri}});
   
     expect(after).toBeTruthy();
     expect(after.dataValues.uri).toEqual(saved.dataValues.uri);
     done();
   });
 
+  it('should not save an event if the eventURI is null', async function(done) {
+    expect.assertions(2);
+
+    const test = lambda4.articles.fox[1];
+    const before = await db.Article.findAll({where: {}});
+    expect(before.length).toEqual(0);
+    console.log(test.uri)
+
+    const saved = await buildSaveArticle(test);
+    const after = await db.Article.find({where:{uri: test.uri}});
+  
+    expect(after).not.toBeTruthy();
+    done();
+  });
+
   it('should retrive an article if it does exist in the DB', async function(done) {
     expect.assertions(5);
 
-    const test = event1Articles[2];
-    const before = await Article.findAll({where: {}});
+    const test = lambda4.articles.fox[0];
+    const before = await db.Article.findAll({where: {}});
     expect(before.length).toEqual(0);
 
     const saved = await buildSaveArticle(test);
-    const after1 = await Article.findAll({where:{}});
+    const after1 = await db.Article.findAll({where:{}});
     const savedAgain = await buildSaveArticle(test);
-    const after2 = await Article.findAll({where:{}});
+    const after2 = await db.Article.findAll({where:{}});
 
     expect(after1.length).toBeGreaterThan(0);
     expect(after2.length).toBeGreaterThan(0);
@@ -495,13 +511,13 @@ describe('buildASaveArticle', function() {
 
   it('should associate the source to the article', async function(done) {
     expect.assertions(5);
-    const test = event1Articles[4];
+    const test = lambda4.articles.fox[0];
     const saved = await buildSaveArticle(test);
-    await Article.find({where:{}}).then(article => {
+    await db.Article.find({where:{}}).then(article => {
       expect(article.dataValues).toHaveProperty('SourceId');
       expect(article.dataValues.SourceId).toBeTruthy();
     });
-    const source = await Source.find({where: {uri: test.source.uri}});
+    const source = await db.Source.find({where: {uri: test.source.uri}});
     const articles = await source.getArticles();
     
     expect(source.dataValues.uri).toEqual(test.source.uri);
