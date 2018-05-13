@@ -379,7 +379,7 @@ const dailyFetch = async() => {
   const articles2 = await getArticlesBySource(2);
   const articles1 = await getArticlesBySource(1);
    
-  console.log('fetched!');
+  return console.log('fetched!');
 };
 
 const relevanceCheck = async() => {
