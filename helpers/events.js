@@ -172,28 +172,32 @@ const buildSaveArticle = async (article) => {
   
   let formatted = await formatArticle(article);
   let event = await db.Event.find({where:{uri: article.eventUri}});
-  let source = await db.Source.find({where: {uri: article.source.uri}}).then(result => result);
+  let source = await db.Source.find({where: {uri: article.source.uri}});
   let savedArticle;
 
   if (!source) {
     source = await extractFormatSource(article);
-    source.save().then(saved => console.log('saved source: ' + saved.dataValues.uri));
+    let savedSource = await source.save();
+    console.log(`Saved source ${savedSource.dataValues.url}`);
   }
 
-  await db.Article.find({where: {uri: article.uri}}).then(async result => {
-    if (result) {
-      savedArticle = result;
-    } else {
-      savedArticle = await formatted.save();
-    }  
-    if (event) {
-      await event.addArticle(savedArticle);
-    } else {
-      console.log('This event is not yet saved: in buildSaveArticle ' + article.eventUri);
-    }
-   
-    await source.addArticle(savedArticle);
-  });
+  let alreadySaved = await db.Article.find({where: {uri: article.uri}});
+
+  if (alreadySaved) {
+    savedArticle = alreadySaved;
+  } else {
+    savedArticle = await formatted.save();
+  }
+
+  if (event) {
+    await event.addArticle(savedArticle);
+    console.log(`Article added to event ${event.dataValues.uri}`);
+  } else {
+    console.log('This event is not yet saved: in buildSaveArticle ' + article.eventUri);
+  }
+
+  await source.addArticle(savedArticle);
+
   return savedArticle;
 };
 
@@ -218,6 +222,10 @@ const associateArticlesNewEvent = async (eventUri) => {
 
 const buildSaveEvent = async (event) => {
   const formatted = await formatEvent(event);
+
+  if (!event.uri) {
+    return null;
+  }
 
   const saved = await db.Event.find({where: {uri: event.uri}});
   if (saved) {
