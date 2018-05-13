@@ -1,11 +1,15 @@
 //fake data lambda1=eventUris, lambda2=events, lambda3=articles by event, lambda4=articles by source
-const { lambda1, lambda2, lambda3, lambda4 } = require('./sampleData.js');
+const { lambda1, lambda2, lambda3, lambda4, articleWithConcepts } = require('./sampleData.js');
 
 //db models
 const db = require('../db/models/index.js');
 
 const { associateEventConceptsOrSubcategories, buildSaveConcept, buildSaveSubcategory, buildSaveEvent, formatSubcategory,
-  formatConcept, formatEvent, formatArticle, extractReleventEvents, buildSaveArticle, extractFormatSource } = require('../helpers/events.js');
+  formatConcept, formatEvent, formatArticle, extractReleventEvents, buildSaveArticle, extractFormatSource, isEventRelevant, associateArticlesNewEvent,
+  associateArticleConceptsOrSubcategories} = require('../helpers/events.js');
+if (process.env.db_name === "eco_chamber") {
+  throw error
+}
 
 afterAll(() => db.sequelize.close());
 
@@ -340,6 +344,88 @@ describe('associateEventConceptsOrSubcategories', function() {
     expect(savedSubcategories.length).toEqual(weighted.length);
     done();
   });
+
+  it('should associate all concepts when multiple events are added', async function(done) {
+    expect.assertions(4);
+
+    const testConcepts1 = lambda2[6].concepts;
+    const event1 = await db.Event.find({where:{}});
+    const event2 = lambda2[7];
+    const testConcepts2 = lambda2[7].concepts;
+
+    await associateEventConceptsOrSubcategories(testConcepts1, 'concept', lambda2[6].uri);
+
+    const savedConcepts1 = await event1.getConcepts();
+    expect(savedConcepts1.length).toBeGreaterThan(0);
+    expect(savedConcepts1.length).toEqual(testConcepts1.length)
+
+    const savedEvent2 = await buildSaveEvent(event2);
+
+    await associateEventConceptsOrSubcategories(testConcepts2, 'concept', lambda2[7].uri);
+
+    const savedConcepts2 = await savedEvent2.getConcepts();
+    expect(savedConcepts2.length).toBeGreaterThan(0);
+    expect(savedConcepts2.length).toEqual(testConcepts2.length)
+    done();
+  });
+});
+//TODO, fix this test after changing lambda
+describe('associateArticleConceptsOrSubcategories', function() {
+  beforeEach(async() => {
+    await db.clearDB();
+    const testArticle = articleWithConcepts;
+    const saved = await buildSaveArticle(testArticle);
+  });
+
+  it('should save all concepts associated with the input article', async function(done) {
+    expect.assertions(4);
+
+    const testArticle = articleWithConcepts; 
+    const found = await db.Article.findAll({where:{}});
+    expect(found.length).toBe(1);
+    const conceptsBefore = await db.Concept.findAll({where:{}});
+    expect(conceptsBefore.length).toBe(0)
+
+    await associateArticleConceptsOrSubcategories(testArticle.concepts, 'concept', testArticle.uri);
+    const conceptsAfter = await db.Concept.findAll({where:{}});
+    expect(conceptsAfter.length).toBeGreaterThan(0);
+    expect(conceptsAfter.length).toEqual(testArticle.concepts.length);
+
+    done();
+  });
+
+  it('should associate all concepts through ArticleConcept table', async function(done) {
+    expect.assertions(3);
+
+    const article = articleWithConcepts;
+    const testConcepts = article.concepts;
+    const found = await db.Article.find({where:{}});
+    const concepts = await found.getConcepts();
+    expect(concepts.length).toBe(0);
+
+    await associateArticleConceptsOrSubcategories(testConcepts, 'concept', article.uri);
+
+    const savedConcepts = await found.getConcepts();
+    expect(savedConcepts.length).toBeGreaterThan(0);
+    expect(savedConcepts.length).toEqual(testConcepts.length);
+    done();
+  });
+
+  it('should save all subcategories associated with the input event', async function(done) {
+    expect.assertions(3);
+
+    const testArticle = articleWithConcepts; 
+    const found = await db.Article.find({where:{uri: testArticle.uri}});
+    const before = await db.Subcategory.findAll({where:{}});
+    expect(before.length).toBe(0);
+    
+    await associateArticleConceptsOrSubcategories(testArticle.categories, 'subcategory', testArticle.uri);
+    const after = await db.Subcategory.findAll({where:{}});
+    expect(after.length).toBeGreaterThan(0);
+    expect(after.length).toEqual(testArticle.categories.length)
+   
+    done();
+  });
 });
 
 describe('extractReleventEvents', function() {
@@ -455,7 +541,7 @@ describe('extractFormatSource', function() {
     done();
   });
 });
-//TODO FIX BELOW HERE
+
 describe('buildASaveArticle', function() {
   beforeEach(() => {
     return db.clearDB().then(async() => await buildSaveEvent(lambda2[1]));
@@ -515,10 +601,11 @@ describe('buildASaveArticle', function() {
     expect.assertions(5);
     const test = lambda4.articles.fox[0];
     const saved = await buildSaveArticle(test);
-    await db.Article.find({where:{}}).then(article => {
-      expect(article.dataValues).toHaveProperty('SourceId');
-      expect(article.dataValues.SourceId).toBeTruthy();
-    });
+    const found = await db.Article.find({where:{}});
+   
+    expect(found.dataValues).toHaveProperty('SourceId');
+    expect(found.dataValues.SourceId).toBeTruthy();
+   
     const source = await db.Source.find({where: {uri: test.source.uri}});
     const articles = await source.getArticles();
     
@@ -539,5 +626,13 @@ describe('buildASaveArticle', function() {
 });
 
 xdescribe('calculateBias', function() {
+
+});
+
+xdescribe('isEventRelevant', function() {
+
+});
+
+xdescribe('associateArticlesNewEvent', function() {
 
 });

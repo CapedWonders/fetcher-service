@@ -30613,7 +30613,210 @@ const lambda4 = {
   }
 };
 
+const articleWithConcepts = 
+{
+  "uri": "867079858",
+  "lang": "eng",
+  "isDuplicate": true,
+  "date": "2018-05-12",
+  "time": "22:25:00",
+  "dateTime": "2018-05-12T22:25:00Z",
+  "dataType": "news",
+  "sim": 0,
+  "url": "http://www.foxnews.com/us/2018/05/12/funeral-held-for-colorado-soldier-killed-in-combat.html",
+  "title": "Funeral held for Colorado soldier killed in combat",
+  "body": "LONGMONT, Colo. - A funeral service has been held in Longmont for a Colorado soldier who was killed by enemy fire in Afghanistan.\n\nGabriel D. Conde's family members shared poems and songs as they remembered the 22-year-old Army airborne infantryman Saturday at Lifebridge Christian Church.\n\nMourners ...",
+  "source": {
+    "uri": "foxnews.com",
+    "dataType": "news",
+    "title": "Fox News",
+    "image": "http://pbs.twimg.com/profile_images/1296339574/foxnews-avatar_bigger.png",
+    "thumbImage": "http://pbs.twimg.com/profile_images/1296339574/foxnews-avatar_mini.png",
+    "favicon": "http://WWw.foxnews.com/global.fncstatic.com/static/v/fn-hp/img/favicon.ico"
+  },
+  "concepts": [
+    {
+      "uri": "http://en.wikipedia.org/wiki/Afghanistan",
+      "type": "loc",
+      "score": 3,
+      "label": {
+        "eng": "Afghanistan"
+      },
+      "location": {
+        "type": "country",
+        "label": {
+          "eng": "Afghanistan"
+        }
+      }
+    },
+    {
+      "uri": "http://en.wikipedia.org/wiki/Colorado",
+      "type": "loc",
+      "score": 3,
+      "label": {
+        "eng": "Colorado"
+      },
+      "location": {
+        "type": "place",
+        "label": {
+          "eng": "Colorado"
+        },
+        "country": {
+          "type": "country",
+          "label": {
+            "eng": "United States"
+          }
+        }
+      }
+    },
+    {
+      "uri": "http://en.wikipedia.org/wiki/Denver",
+      "type": "loc",
+      "score": 1,
+      "label": {
+        "eng": "Denver"
+      },
+      "location": {
+        "type": "place",
+        "label": {
+          "eng": "Denver"
+        },
+        "country": {
+          "type": "country",
+          "label": {
+            "eng": "United States"
+          }
+        }
+      }
+    },
+    {
+      "uri": "http://en.wikipedia.org/wiki/Berthoud,_Colorado",
+      "type": "loc",
+      "score": 1,
+      "label": {
+        "eng": "Berthoud, Colorado"
+      },
+      "location": null
+    },
+    {
+      "uri": "http://en.wikipedia.org/wiki/Longmont,_Colorado",
+      "type": "loc",
+      "score": 5,
+      "label": {
+        "eng": "Longmont, Colorado"
+      },
+      "location": {
+        "type": "place",
+        "label": {
+          "eng": "Longmont, Colorado"
+        },
+        "country": {
+          "type": "country",
+          "label": {
+            "eng": "United States"
+          }
+        }
+      }
+    },
+    {
+      "uri": "http://en.wikipedia.org/wiki/Alaska",
+      "type": "loc",
+      "score": 2,
+      "label": {
+        "eng": "Alaska"
+      },
+      "location": {
+        "type": "place",
+        "label": {
+          "eng": "Alaska"
+        },
+        "country": {
+          "type": "country",
+          "label": {
+            "eng": "United States"
+          }
+        }
+      }
+    },
+    {
+      "uri": "http://en.wikipedia.org/wiki/Christian_Church",
+      "type": "wiki",
+      "score": 3,
+      "label": {
+        "eng": "Christian Church"
+      }
+    },
+    {
+      "uri": "http://en.wikipedia.org/wiki/Infantry",
+      "type": "wiki",
+      "score": 3,
+      "label": {
+        "eng": "Infantry"
+      }
+    },
+    {
+      "uri": "http://en.wikipedia.org/wiki/United_States_Department_of_Defense",
+      "type": "org",
+      "score": 2,
+      "label": {
+        "eng": "United States Department of Defense"
+      }
+    },
+    {
+      "uri": "http://en.wikipedia.org/wiki/Battle_Hymn_of_the_Republic",
+      "type": "wiki",
+      "score": 3,
+      "label": {
+        "eng": "Battle Hymn of the Republic"
+      }
+    },
+    {
+      "uri": "http://en.wikipedia.org/wiki/Fort_Logan_National_Cemetery",
+      "type": "wiki",
+      "score": 1,
+      "label": {
+        "eng": "Fort Logan National Cemetery"
+      }
+    },
+    {
+      "uri": "http://en.wikipedia.org/wiki/Joint_Base_Elmendorf–Richardson",
+      "type": "wiki",
+      "score": 2,
+      "label": {
+        "eng": "Joint Base Elmendorf–Richardson"
+      }
+    }
+  ],
+  "categories": [
+    {
+      "uri": "dmoz/Society",
+      "label": "dmoz/Society",
+      "wgt": 10
+    },
+    {
+      "uri": "dmoz/Society/Religion_and_Spirituality/Christianity",
+      "label": "dmoz/Society/Religion and Spirituality/Christianity",
+      "wgt": 9
+    },
+    {
+      "uri": "dmoz/Society/Death",
+      "label": "dmoz/Society/Death",
+      "wgt": 10
+    },
+    {
+      "uri": "dmoz/Society/Death/Death_Care",
+      "label": "dmoz/Society/Death/Death Care",
+      "wgt": 10
+    },
+    {
+      "uri": "dmoz/Society/Holidays/Flag_Day",
+      "label": "dmoz/Society/Holidays/Flag Day",
+      "wgt": 10
+    }
+  ],
+  "image": "http://a57.foxnews.com/images.foxnews.com/content/fox-news/us/2018/05/12/funeral-held-for-colorado-soldier-killed-in-combat/_jcr_content/par/featured-media/media-0.img.png/0/0/1526163457603.png?ve=1",
+  "eventUri": "eng-3965724",
+  "wgt": 263859900
+};
 
-
-
-module.exports = { lambda1, relevantEvents, lambda2, lambda3, lambda4, sampleCategories };
+module.exports = { articleWithConcepts, lambda1, relevantEvents, lambda2, lambda3, lambda4, sampleCategories };

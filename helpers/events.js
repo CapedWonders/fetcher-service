@@ -172,28 +172,32 @@ const buildSaveArticle = async (article) => {
   
   let formatted = await formatArticle(article);
   let event = await db.Event.find({where:{uri: article.eventUri}});
-  let source = await db.Source.find({where: {uri: article.source.uri}}).then(result => result);
+  let source = await db.Source.find({where: {uri: article.source.uri}});
   let savedArticle;
 
   if (!source) {
     source = await extractFormatSource(article);
-    source.save().then(saved => console.log('saved source: ' + saved.dataValues.uri));
+    let savedSource = await source.save();
+    console.log(`Saved source ${savedSource.dataValues.uri}`);
   }
 
-  await db.Article.find({where: {uri: article.uri}}).then(async result => {
-    if (result) {
-      savedArticle = result;
-    } else {
-      savedArticle = await formatted.save();
-    }  
-    if (event) {
-      await event.addArticle(savedArticle);
-    } else {
-      console.log('This event is not yet saved: in buildSaveArticle ' + article.eventUri);
-    }
-   
-    await source.addArticle(savedArticle);
-  });
+  let alreadySaved = await db.Article.find({where: {uri: article.uri}});
+
+  if (alreadySaved) {
+    savedArticle = alreadySaved;
+  } else {
+    savedArticle = await formatted.save();
+  }
+
+  if (event) {
+    await event.addArticle(savedArticle);
+    console.log(`Article added to event ${event.dataValues.uri}`);
+  } else {
+    console.log('This event is not yet saved: in buildSaveArticle ' + article.eventUri);
+  }
+
+  await source.addArticle(savedArticle);
+
   return savedArticle;
 };
 
@@ -219,18 +223,19 @@ const associateArticlesNewEvent = async (eventUri) => {
 const buildSaveEvent = async (event) => {
   const formatted = await formatEvent(event);
 
-  return db.Event.find({where: {uri: event.uri}}).then(result => {
-    if (result === null) {
-      formatted.save().then(savedEvent => {
-        //send this saved event info in a message through AWS queue to articles service
-        console.log('event saved, sending to articles service');
-        return savedEvent;
-      }).catch(err => console.log(err));
-    } else {
-      console.log('This event already exists')
-      return result;
-     }
-  }).catch(err => console.log(err));
+  if (!event.uri) {
+    return null;
+  }
+
+  const saved = await db.Event.find({where: {uri: event.uri}});
+  if (saved) {
+    console.log(`Event ${event.uri} already exists`);
+    return saved;
+  } else {
+    const newEvent = await formatted.save();
+    console.log(`New event saved ${newEvent.dataValues.uri}`);
+    return newEvent;
+  }
 };
 
 const buildSaveSubcategory = ({ uri }) => {
@@ -286,14 +291,12 @@ const associateArticleConceptsOrSubcategories = async (conceptsOrSubcategories, 
         await article.addConcept(saved).catch(err => console.log(err));
       } else if (type === 'subcategory') {
         const saved = await buildSaveSubcategory(item);
-        if (item.wgt > 50) {
-          await article.addSubcategory(saved).catch(err => console.log(err));
-        }       
+        await article.addSubcategory(saved).catch(err => console.log(err));             
       }
     }
     console.log(`Finished associating ${type} for event ${articleUri}`);
   } else {
-    console.log('We encountered an error retrieving the event: ' + eventUri);
+    console.log('We encountered an error retrieving the article: ' + articleUri);
   }  
 };
 
@@ -403,6 +406,9 @@ module.exports = {
   dailyFetch,
   relevanceCheck,
   findUnsavedEvents,
+  isEventRelevant,
+  associateArticlesNewEvent,
+  associateArticleConceptsOrSubcategories
 };
 
 
