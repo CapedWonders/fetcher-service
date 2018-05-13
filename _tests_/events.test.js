@@ -1,5 +1,5 @@
 //fake data lambda1=eventUris, lambda2=events, lambda3=articles by event, lambda4=articles by source
-const { lambda1, lambda2, lambda3, lambda4 } = require('./sampleData.js');
+const { lambda1, lambda2, lambda3, lambda4, articleWithConcepts } = require('./sampleData.js');
 
 //db models
 const db = require('../db/models/index.js');
@@ -370,28 +370,60 @@ describe('associateEventConceptsOrSubcategories', function() {
   });
 });
 //TODO, fix this test after changing lambda
-xdescribe('associateArticleConceptsOrSubcategories', function() {
+describe('associateArticleConceptsOrSubcategories', function() {
   beforeEach(async() => {
-    return db.clearDB().then(async() => {
-      const testArticle = lambda4.articles.fox[0];
-      await buildSaveArticle(testArticle);
-    }); 
+    await db.clearDB();
+    const testArticle = articleWithConcepts;
+    const saved = await buildSaveArticle(testArticle);
   });
 
   it('should save all concepts associated with the input article', async function(done) {
     expect.assertions(4);
 
-    const testArticle = lambda4.articles.fox[0]; 
+    const testArticle = articleWithConcepts; 
     const found = await db.Article.findAll({where:{}});
     expect(found.length).toBe(1);
     const conceptsBefore = await db.Concept.findAll({where:{}});
-    expect(conceptsBefore.length).toBe(0);
+    expect(conceptsBefore.length).toBe(0)
 
     await associateArticleConceptsOrSubcategories(testArticle.concepts, 'concept', testArticle.uri);
     const conceptsAfter = await db.Concept.findAll({where:{}});
     expect(conceptsAfter.length).toBeGreaterThan(0);
     expect(conceptsAfter.length).toEqual(testArticle.concepts.length);
 
+    done();
+  });
+
+  it('should associate all concepts through ArticleConcept table', async function(done) {
+    expect.assertions(3);
+
+    const article = articleWithConcepts;
+    const testConcepts = article.concepts;
+    const found = await db.Article.find({where:{}});
+    const concepts = await found.getConcepts();
+    expect(concepts.length).toBe(0);
+
+    await associateArticleConceptsOrSubcategories(testConcepts, 'concept', article.uri);
+
+    const savedConcepts = await found.getConcepts();
+    expect(savedConcepts.length).toBeGreaterThan(0);
+    expect(savedConcepts.length).toEqual(testConcepts.length);
+    done();
+  });
+
+  it('should save all subcategories associated with the input event', async function(done) {
+    expect.assertions(3);
+
+    const testArticle = articleWithConcepts; 
+    const found = await db.Article.find({where:{uri: testArticle.uri}});
+    const before = await db.Subcategory.findAll({where:{}});
+    expect(before.length).toBe(0);
+    
+    await associateArticleConceptsOrSubcategories(testArticle.categories, 'subcategory', testArticle.uri);
+    const after = await db.Subcategory.findAll({where:{}});
+    expect(after.length).toBeGreaterThan(0);
+    expect(after.length).toEqual(testArticle.categories.length)
+   
     done();
   });
 });

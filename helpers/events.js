@@ -178,7 +178,7 @@ const buildSaveArticle = async (article) => {
   if (!source) {
     source = await extractFormatSource(article);
     let savedSource = await source.save();
-    console.log(`Saved source ${savedSource.dataValues.url}`);
+    console.log(`Saved source ${savedSource.dataValues.uri}`);
   }
 
   let alreadySaved = await db.Article.find({where: {uri: article.uri}});
@@ -291,14 +291,12 @@ const associateArticleConceptsOrSubcategories = async (conceptsOrSubcategories, 
         await article.addConcept(saved).catch(err => console.log(err));
       } else if (type === 'subcategory') {
         const saved = await buildSaveSubcategory(item);
-        if (item.wgt > 50) {
-          await article.addSubcategory(saved).catch(err => console.log(err));
-        }       
+        await article.addSubcategory(saved).catch(err => console.log(err));             
       }
     }
     console.log(`Finished associating ${type} for event ${articleUri}`);
   } else {
-    console.log('We encountered an error retrieving the event: ' + eventUri);
+    console.log('We encountered an error retrieving the article: ' + articleUri);
   }  
 };
 
@@ -408,6 +406,9 @@ module.exports = {
   dailyFetch,
   relevanceCheck,
   findUnsavedEvents,
+  isEventRelevant,
+  associateArticlesNewEvent,
+  associateArticleConceptsOrSubcategories
 };
 
 
