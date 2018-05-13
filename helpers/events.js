@@ -219,18 +219,15 @@ const associateArticlesNewEvent = async (eventUri) => {
 const buildSaveEvent = async (event) => {
   const formatted = await formatEvent(event);
 
-  return db.Event.find({where: {uri: event.uri}}).then(result => {
-    if (result === null) {
-      formatted.save().then(savedEvent => {
-        //send this saved event info in a message through AWS queue to articles service
-        console.log('event saved, sending to articles service');
-        return savedEvent;
-      }).catch(err => console.log(err));
-    } else {
-      console.log('This event already exists')
-      return result;
-     }
-  }).catch(err => console.log(err));
+  const saved = await db.Event.find({where: {uri: event.uri}});
+  if (saved) {
+    console.log(`Event ${event.uri} already exists`);
+    return saved;
+  } else {
+    const newEvent = await formatted.save();
+    console.log(`New event saved ${newEvent.dataValues.uri}`);
+    return newEvent;
+  }
 };
 
 const buildSaveSubcategory = ({ uri }) => {

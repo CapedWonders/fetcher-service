@@ -6,6 +6,9 @@ const db = require('../db/models/index.js');
 
 const { associateEventConceptsOrSubcategories, buildSaveConcept, buildSaveSubcategory, buildSaveEvent, formatSubcategory,
   formatConcept, formatEvent, formatArticle, extractReleventEvents, buildSaveArticle, extractFormatSource } = require('../helpers/events.js');
+if (process.env.db_name === "eco_chamber") {
+  throw error
+}
 
 afterAll(() => db.sequelize.close());
 
@@ -338,6 +341,30 @@ describe('associateEventConceptsOrSubcategories', function() {
 
     expect(savedSubcategories.length).toBeGreaterThan(0);
     expect(savedSubcategories.length).toEqual(weighted.length);
+    done();
+  });
+
+  it.only('should associate all concepts when multiple events are added', async function(done) {
+    expect.assertions(4);
+
+    const testConcepts1 = lambda2[6].concepts;
+    const event1 = await db.Event.find({where:{}});
+    const event2 = lambda2[7];
+    const testConcepts2 = lambda2[7].concepts;
+
+    await associateEventConceptsOrSubcategories(testConcepts1, 'concept', lambda2[6].uri);
+
+    const savedConcepts1 = await event1.getConcepts();
+    expect(savedConcepts1.length).toBeGreaterThan(0);
+    expect(savedConcepts1.length).toEqual(testConcepts1.length)
+
+    const savedEvent2 = await buildSaveEvent(event2);
+
+    await associateEventConceptsOrSubcategories(testConcepts2, 'concept', lambda2[7].uri);
+
+    const savedConcepts2 = await savedEvent2.getConcepts();
+    expect(savedConcepts2.length).toBeGreaterThan(0);
+    expect(savedConcepts2.length).toEqual(testConcepts2.length)
     done();
   });
 });
