@@ -230,8 +230,8 @@ const buildSaveEvent = async (event) => {
   }
 
   const formatted = await formatEvent(event);
-
   const saved = await db.Event.find({where: {uri: event.uri}});
+
   if (saved) {
     console.log(`Event ${event.uri} already exists`);
     return saved;
@@ -349,6 +349,8 @@ const getArticlesBySource = async(daysAgo) => {
   for (const source in articles) {
     for (const article of articles[source]) {
       await buildSaveArticle(article);
+      await associateArticleConceptsOrSubcategories(article.concepts, 'concept', article.uri);
+      await associateArticleConceptsOrSubcategories(article.categories, 'subcategory' article.uri);
     }
   }
   console.log('articles saved');
