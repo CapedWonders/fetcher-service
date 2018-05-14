@@ -30819,4 +30819,433 @@ const articleWithConcepts =
   "wgt": 263859900
 };
 
-module.exports = { articleWithConcepts, lambda1, relevantEvents, lambda2, lambda3, lambda4, sampleCategories };
+const sampleEvent = {
+    "uri": "eng-3965563",
+    "concepts": [
+      {
+        "uri": "http://en.wikipedia.org/wiki/Bloomberg_L.P.",
+        "type": "org",
+        "score": 100,
+        "label": {
+          "eng": "Bloomberg L.P."
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Rice_University",
+        "type": "org",
+        "score": 95,
+        "label": {
+          "eng": "Rice University"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Michael_Bloomberg",
+        "type": "person",
+        "score": 85,
+        "label": {
+          "eng": "Michael Bloomberg"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Donald_Trump",
+        "type": "person",
+        "score": 84,
+        "label": {
+          "eng": "Donald Trump"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Washington_(state)",
+        "type": "loc",
+        "score": 79,
+        "label": {
+          "eng": "Washington (state)"
+        },
+        "location": {
+          "type": "place",
+          "label": {
+            "eng": "Washington (state)"
+          },
+          "country": {
+            "type": "country",
+            "label": {
+              "eng": "United States"
+            }
+          }
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Epidemic",
+        "type": "wiki",
+        "score": 78,
+        "label": {
+          "eng": "Epidemic"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Commencement_speech",
+        "type": "wiki",
+        "score": 78,
+        "label": {
+          "eng": "Commencement speech"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Texas",
+        "type": "loc",
+        "score": 78,
+        "label": {
+          "eng": "Texas"
+        },
+        "location": {
+          "type": "place",
+          "label": {
+            "eng": "Texas"
+          },
+          "country": {
+            "type": "country",
+            "label": {
+              "eng": "United States"
+            }
+          }
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Mayor_of_New_York_City",
+        "type": "wiki",
+        "score": 76,
+        "label": {
+          "eng": "Mayor of New York City"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Democracy",
+        "type": "wiki",
+        "score": 72,
+        "label": {
+          "eng": "Democracy"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Communism",
+        "type": "wiki",
+        "score": 68,
+        "label": {
+          "eng": "Communism"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Terrorism",
+        "type": "wiki",
+        "score": 66,
+        "label": {
+          "eng": "Terrorism"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/United_States",
+        "type": "loc",
+        "score": 65,
+        "label": {
+          "eng": "United States"
+        },
+        "location": {
+          "type": "country",
+          "label": {
+            "eng": "United States"
+          }
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Republican_Party_(United_States)",
+        "type": "org",
+        "score": 54,
+        "label": {
+          "eng": "Republican Party (United States)"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Oval_Office",
+        "type": "wiki",
+        "score": 46,
+        "label": {
+          "eng": "Oval Office"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Billionaire",
+        "type": "wiki",
+        "score": 46,
+        "label": {
+          "eng": "Billionaire"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Politics_of_the_United_States",
+        "type": "wiki",
+        "score": 44,
+        "label": {
+          "eng": "Politics of the United States"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/George_Washington",
+        "type": "person",
+        "score": 44,
+        "label": {
+          "eng": "George Washington"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Houston",
+        "type": "loc",
+        "score": 40,
+        "label": {
+          "eng": "Houston"
+        },
+        "location": {
+          "type": "place",
+          "label": {
+            "eng": "Houston"
+          },
+          "country": {
+            "type": "country",
+            "label": {
+              "eng": "United States"
+            }
+          }
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/American_Civil_War",
+        "type": "wiki",
+        "score": 37,
+        "label": {
+          "eng": "American Civil War"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Crime",
+        "type": "wiki",
+        "score": 36,
+        "label": {
+          "eng": "Crime"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Climate_change",
+        "type": "wiki",
+        "score": 34,
+        "label": {
+          "eng": "Climate change"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Democratic_Party_(United_States)",
+        "type": "org",
+        "score": 33,
+        "label": {
+          "eng": "Democratic Party (United States)"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Bill_Clinton",
+        "type": "person",
+        "score": 29,
+        "label": {
+          "eng": "Bill Clinton"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/White_House",
+        "type": "wiki",
+        "score": 29,
+        "label": {
+          "eng": "White House"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Ethics",
+        "type": "wiki",
+        "score": 28,
+        "label": {
+          "eng": "Ethics"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Hoax",
+        "type": "wiki",
+        "score": 26,
+        "label": {
+          "eng": "Hoax"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Morality",
+        "type": "wiki",
+        "score": 26,
+        "label": {
+          "eng": "Morality"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/China",
+        "type": "loc",
+        "score": 24,
+        "label": {
+          "eng": "China"
+        },
+        "location": {
+          "type": "country",
+          "label": {
+            "eng": "China"
+          }
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Political_corruption",
+        "type": "wiki",
+        "score": 22,
+        "label": {
+          "eng": "Political corruption"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Peer_review",
+        "type": "wiki",
+        "score": 21,
+        "label": {
+          "eng": "Peer review"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Russia",
+        "type": "loc",
+        "score": 21,
+        "label": {
+          "eng": "Russia"
+        },
+        "location": {
+          "type": "country",
+          "label": {
+            "eng": "Russia"
+          }
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Making_false_statements",
+        "type": "wiki",
+        "score": 18,
+        "label": {
+          "eng": "Making false statements"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Federal_Bureau_of_Investigation",
+        "type": "org",
+        "score": 17,
+        "label": {
+          "eng": "Federal Bureau of Investigation"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Mayor",
+        "type": "wiki",
+        "score": 13,
+        "label": {
+          "eng": "Mayor"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Associated_Press",
+        "type": "org",
+        "score": 12,
+        "label": {
+          "eng": "Associated Press"
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/Washington,_D.C.",
+        "type": "loc",
+        "score": 7,
+        "label": {
+          "eng": "Washington, D.C."
+        },
+        "location": {
+          "type": "place",
+          "label": {
+            "eng": "Washington, D.C."
+          },
+          "country": {
+            "type": "country",
+            "label": {
+              "eng": "United States"
+            }
+          }
+        }
+      },
+      {
+        "uri": "http://en.wikipedia.org/wiki/New_York_City",
+        "type": "loc",
+        "score": 6,
+        "label": {
+          "eng": "New York City"
+        },
+        "location": {
+          "type": "place",
+          "label": {
+            "eng": "New York City"
+          },
+          "country": {
+            "type": "country",
+            "label": {
+              "eng": "United States"
+            }
+          }
+        }
+      }
+    ],
+    "eventDate": "2018-05-12",
+    "totalArticleCount": 19,
+    "title": {
+      "eng": "Michael Bloomberg fears \"epidemic of dishonesty\""
+    },
+    "summary": {
+      "eng": "NEW YORK -- Americans are facing an \"epidemic of dishonesty\" in Washington that's more dangerous than terrorism or communism. That's according to former New York City Mayor Michael Bloomberg, who warned in a commencement speech on Saturday at Texas' Rice University that \"an endless barrage of lies\" and a trend toward \"alternate realities\" in national politics pose a dire threat to U.S. democracy.\n\nThe 76-year-old billionaire, who flirted with an independent presidential run in 2016, did not call "
+    },
+    "location": {
+      "type": "place",
+      "label": {
+        "eng": "Texas"
+      },
+      "country": {
+        "type": "country",
+        "label": {
+          "eng": "United States"
+        }
+      }
+    },
+    "categories": [
+      {
+        "uri": "dmoz/Society/Politics",
+        "label": "dmoz/Society/Politics",
+        "wgt": 93
+      },
+      {
+        "uri": "dmoz/Society/Politics/Directories",
+        "label": "dmoz/Society/Politics/Directories",
+        "wgt": 80
+      },
+      {
+        "uri": "dmoz/Society/Politics/Democracy",
+        "label": "dmoz/Society/Politics/Democracy",
+        "wgt": 60
+      }
+    ],
+    "articleCounts": {
+      "eng": 19
+    },
+    "wgt": 1
+};
+
+module.exports = { sampleEvent, articleWithConcepts, lambda1, relevantEvents, lambda2, lambda3, lambda4, sampleCategories };

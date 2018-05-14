@@ -209,23 +209,23 @@ const associateArticlesNewEvent = async (eventUri) => {
 
   if (event) {
     articles = await db.Article.findAll({where:{ eventUri: eventUri }});
-    console.log(articles)
-
+   
     for (const article of articles) {
       await event.addArticle(article);
-      console.log('added article');
+      console.log(`added article ${article.id} to event ${eventUri}`);
     }
+    console.log(`articles saved for event ${eventUri}`)
   } else {
     console.log('this event is not in our system');
   }
 };
 
 const buildSaveEvent = async (event) => {
-  const formatted = await formatEvent(event);
-
   if (!event.uri) {
     return null;
   }
+
+  const formatted = await formatEvent(event);
 
   const saved = await db.Event.find({where: {uri: event.uri}});
   if (saved) {
