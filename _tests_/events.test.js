@@ -6,7 +6,7 @@ const db = require('../db/models/index.js');
 
 const { associateEventConceptsOrSubcategories, buildSaveConcept, buildSaveSubcategory, buildSaveEvent, formatSubcategory,
   formatConcept, formatEvent, formatArticle, extractReleventEvents, buildSaveArticle, extractFormatSource, isEventRelevant, associateArticlesNewEvent,
-  associateArticleConceptsOrSubcategories} = require('../helpers/events.js');
+  associateArticleConceptsOrSubcategories, getUnassociatedArticles } = require('../helpers/events.js');
 if (process.env.db_name === "eco_chamber") {
   throw error
 }
@@ -623,6 +623,18 @@ describe('buildASaveArticle', function() {
   xit('should not call format source if the source already exists', async function(done) {
    
   }); 
+});
+
+describe('getUnassociatedArticles', function() {
+  beforeEach(() => {
+    return db.clearDB().then(async() => {
+      for (const article of lambda4.articles.fox) {
+        await buildSaveArticle(article);
+      }
+    });
+  });
+
+  it('shoud retrieve events that are unassociated')
 });
 
 xdescribe('calculateBias', function() {

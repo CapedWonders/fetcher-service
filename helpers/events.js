@@ -3,6 +3,7 @@ const axios = require('axios');
 
 //db models
 const db = require('../db/models/index.js');
+const Op = require('../db/models/index.js').Sequelize.Op;
 
 //lodash
 const _ = require('lodash');
@@ -18,6 +19,55 @@ const { eventUriLambda, eventInfoLambda, articlesBySourceLambda, articlesByEvent
    PROCESSING EVENTS - functions that determine which data we care about 
    ********************************************************************* 
 */
+
+//helper
+function getKeyByValue(object, value) {
+  return Object.keys(object).find(key => object[key] === value);
+}
+
+const getUnassociatedArticlesBySource = async(daysAgo) => {
+  const sourcesObj = {};
+  const from = new Date(new Date() - (24*daysAgo) * 60 * 60 * 1000);
+  
+  const allSources = {
+    fox: 'foxnews.com',
+    breitbart: 'breitbart.com',
+    hill: 'thehill.com',
+    ap: 'hosted.ap.org',
+    times: 'nytimes.com',
+    msnbc: 'msnbc.com',
+    huffington: 'huffingtonpost.com',
+  };
+  const sourceUris = Object.values(allSources);
+  
+  const sources = await db.Source.findAll({
+    where: {
+      uri: sourceUris,
+    },
+    include: [{
+      model: db.Article,
+      where: { 
+        eventId: null,
+        createdAt: {
+          [Op.lt]: new Date(),
+          [Op.gt]: from
+        }
+      },
+      required: false
+    }],
+  });
+
+  for (const source of sources) {
+    let currentSource = getKeyByValue(allSources, source.dataValues.uri);
+    sourcesObj[currentSource] = [];
+
+    for (const article of source.dataValues.Articles) {      
+      sourcesObj[currentSource].push(article.dataValues.eventUri);  
+    }    
+  }
+
+  return sourcesObj;
+};
 
 //get the uris that are shared between news outlets
 const extractReleventEvents = (urisObj) => {
@@ -55,6 +105,13 @@ const extractReleventEvents = (urisObj) => {
   let spectrumArray = [...spectrumSet];
   
   return spectrumArray;
+};
+
+//check to see if any previously unsaved events are now relevant
+const relevanceCheck = async(daysAgo) => { 
+  const sources = await getUnassociatedArticlesBySource(daysAgo);
+  const relevant = extractReleventEvents(sources);
+  return relevant;
 };
 
 //TODO: TEST THIS FUNCTION
@@ -102,6 +159,19 @@ const isEventRelevant = async(eventUri) => {
     return false;
   }
 };
+
+const findUnsavedEvents = async(uris) => {
+  let unsaved = [];
+  for (const uri of uris) {
+    let event = await db.Event.find({where:{ uri }});
+
+    if (!event) {
+      unsaved.push(uri);
+    }
+  }
+  console.log("unsaved events:", unsaved);
+  return unsaved;
+}
 
 /* 
    ********************************************************************* 
@@ -282,7 +352,7 @@ const associateEventConceptsOrSubcategories = async (conceptsOrSubcategories, ty
     console.log('We encountered an error retrieving the event: ' + eventUri);
   }  
 };
-//TODO:  change lambda function to request concepts and categories
+
 //TODO:  merge this function into the other one
 // save arrays of either concepts or categories and associate each one with the event
 const associateArticleConceptsOrSubcategories = async (conceptsOrSubcategories, type, articleUri) => {
@@ -350,25 +420,14 @@ const getArticlesBySource = async(daysAgo) => {
     for (const article of articles[source]) {
       await buildSaveArticle(article);
       await associateArticleConceptsOrSubcategories(article.concepts, 'concept', article.uri);
-      await associateArticleConceptsOrSubcategories(article.categories, 'subcategory' article.uri);
+      await associateArticleConceptsOrSubcategories(article.categories, 'subcategory', article.uri);
     }
   }
   console.log('articles saved');
   return { articles, uris }
 };
 
-const findUnsavedEvents = async(uris) => {
-  let unsaved = [];
-  for (const uri of uris) {
-    let event = await db.Event.find({where:{ uri }});
 
-    if (!event) {
-      unsaved.push(uri);
-    }
-  }
-  console.log("unsaved events:", unsaved);
-  return unsaved;
-}
 
 //once every 24 hours, hit all three lambda functions to get our data into the DB
 //const ~75 tokens
@@ -385,16 +444,16 @@ const dailyFetch = async() => {
   const articles2 = await getArticlesBySource(2);
   const articles1 = await getArticlesBySource(1);
    
-  return console.log('fetched!');
+  console.log('fetched!');
+  process.exit();
 };
 
-const relevanceCheck = async() => {
-
-  //TODO: check to see if any previously unsaved events are now relevant
-
-
-  //TODO: fetch additional event info for any newly relevant events
+//fetch additional event info for any newly relevant events from the last 3 days
+const fetchNewlyRelevant = async(daysAgo) => {
+  const newlyRelevant = await relevanceCheck(daysAgo);
+  await getEventInfo(uris);
 };
+
 
 module.exports = {
   associateEventConceptsOrSubcategories,
@@ -414,9 +473,12 @@ module.exports = {
   findUnsavedEvents,
   isEventRelevant,
   associateArticlesNewEvent,
-  associateArticleConceptsOrSubcategories
+  associateArticleConceptsOrSubcategories,
+  getUnassociatedArticles,
+  fetchNewlyRelevant,
 };
 
+getUnassociatedArticles(3, 0);
 
 
 
