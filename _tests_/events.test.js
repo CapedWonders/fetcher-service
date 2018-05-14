@@ -1,5 +1,5 @@
 //fake data lambda1=eventUris, lambda2=events, lambda3=articles by event, lambda4=articles by source
-const { lambda1, lambda2, lambda3, lambda4, articleWithConcepts } = require('./sampleData.js');
+const { lambda1, lambda2, lambda3, lambda4, articleWithConcepts, sampleEvent } = require('./sampleData.js');
 
 //db models
 const db = require('../db/models/index.js');
