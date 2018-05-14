@@ -117,7 +117,7 @@ const formatEvent = (event) => {
     date: moment(event.eventDate, "YYYY-MM-DD"),
     title: event.title.eng || event.title || "",
     summary: event.summary.eng || event.summary || ""
-  });
+  }).catch(err => console.log(err));
 };
 
 const formatConcept = (concept) => {
