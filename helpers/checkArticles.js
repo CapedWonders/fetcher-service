@@ -1,6 +1,6 @@
 const { fetchNewlyRelevant } = require('./events.js');
 
-fetchNewlyRelevant();
+fetchNewlyRelevant(5);
 
 
 
