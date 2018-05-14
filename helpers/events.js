@@ -112,12 +112,16 @@ const isEventRelevant = async(eventUri) => {
 
 //format instances to conform to DB models
 const formatEvent = (event) => {
-  return db.Event.build({
-    uri: event.uri,
-    date: moment(event.eventDate, "YYYY-MM-DD"),
-    title: event.title.eng || event.title || "",
-    summary: event.summary.eng || event.summary || ""
-  }).catch(err => console.log(err));
+  if (event && event.uri) {
+    return db.Event.build({
+      uri: event.uri,
+      date: moment(event.eventDate, "YYYY-MM-DD"),
+      title: event.title.eng || event.title || "",
+      summary: event.summary.eng || event.summary || ""
+    });
+  } else {
+    return null
+  }
 };
 
 const formatConcept = (concept) => {
