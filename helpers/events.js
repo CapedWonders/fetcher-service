@@ -427,8 +427,6 @@ const getArticlesBySource = async(daysAgo) => {
   return { articles, uris }
 };
 
-
-
 //once every 24 hours, hit all three lambda functions to get our data into the DB
 //const ~75 tokens
 const dailyFetch = async() => {
@@ -445,13 +443,15 @@ const dailyFetch = async() => {
   const articles1 = await getArticlesBySource(1);
    
   console.log('fetched!');
-  process.exit();
+  db.sequelize.close();
 };
 
 //fetch additional event info for any newly relevant events from the last 3 days
 const fetchNewlyRelevant = async(daysAgo) => {
   const newlyRelevant = await relevanceCheck(daysAgo);
   await getEventInfo(uris);
+  console.log('newly relevant events fetched');
+  db.sequelize.close();
 };
 
 
@@ -474,11 +474,11 @@ module.exports = {
   isEventRelevant,
   associateArticlesNewEvent,
   associateArticleConceptsOrSubcategories,
-  getUnassociatedArticles,
+  getUnassociatedArticlesBySource,
   fetchNewlyRelevant,
 };
 
-getUnassociatedArticles(3, 0);
+
 
 
 

@@ -6,7 +6,7 @@ const db = require('../db/models/index.js');
 
 const { associateEventConceptsOrSubcategories, buildSaveConcept, buildSaveSubcategory, buildSaveEvent, formatSubcategory,
   formatConcept, formatEvent, formatArticle, extractReleventEvents, buildSaveArticle, extractFormatSource, isEventRelevant, associateArticlesNewEvent,
-  associateArticleConceptsOrSubcategories, getUnassociatedArticles } = require('../helpers/events.js');
+  associateArticleConceptsOrSubcategories, getUnassociatedArticlesBySource } = require('../helpers/events.js');
 if (process.env.db_name === "eco_chamber") {
   throw error
 }
@@ -625,7 +625,7 @@ describe('buildASaveArticle', function() {
   }); 
 });
 
-describe('getUnassociatedArticles', function() {
+describe('getUnassociatedArticlesBySource', function() {
   beforeEach(() => {
     return db.clearDB().then(async() => {
       for (const article of lambda4.articles.fox) {
