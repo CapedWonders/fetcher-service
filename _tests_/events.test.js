@@ -625,7 +625,7 @@ describe('buildASaveArticle', function() {
   }); 
 });
 
-describe('getUnassociatedArticlesBySource', function() {
+xdescribe('getUnassociatedArticlesBySource', function() {
   beforeEach(() => {
     return db.clearDB().then(async() => {
       for (const article of lambda4.articles.fox) {
