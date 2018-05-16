@@ -452,7 +452,7 @@ const dailyFetch = async() => {
 //fetch additional event info for any newly relevant events from the last 3 days
 const fetchNewlyRelevant = async(daysAgo) => {
   const newlyRelevant = await relevanceCheck(daysAgo);
-  await getEventInfo(uris);
+  await getEventInfo(newlyRelevant);
   console.log('newly relevant events fetched');
   db.sequelize.close();
 };
