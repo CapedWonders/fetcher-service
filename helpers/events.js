@@ -392,15 +392,19 @@ const getUris = async() => {
 //after saving, checks whether there are any saved unassociated articles in our DB
 const getEventInfo = async(uris) => {
   let unsaved = await findUnsavedEvents(uris);
-  const response = await axios.post(eventInfoLambda, { uris: unsaved });
+  if (unsaved.length > 0) {
+    const response = await axios.post(eventInfoLambda, { uris: unsaved });
 
-  for (const event of response.data) {
-    let current = await buildSaveEvent(event); 
-    await associateEventConceptsOrSubcategories(event.concepts, 'concept', event.uri);
-    await associateEventConceptsOrSubcategories(event.categories, 'subcategory', event.uri); 
-    await associateArticlesNewEvent(event.uri);
-  }
-  console.log("events saved");
+    for (const event of response.data) {
+      let current = await buildSaveEvent(event); 
+      await associateEventConceptsOrSubcategories(event.concepts, 'concept', event.uri);
+      await associateEventConceptsOrSubcategories(event.categories, 'subcategory', event.uri); 
+      await associateArticlesNewEvent(event.uri);
+    }
+    console.log("events saved");
+  } else {
+    console.log('There are no new events to fetch');
+  }  
 };
 
 //get the articles associated with each event COST: 10 tokens per event
@@ -433,8 +437,7 @@ const getArticlesBySource = async(daysAgo) => {
 //once every 24 hours, hit all three lambda functions to get our data into the DB
 //const ~75 tokens
 const dailyFetch = async() => {
-  const newlyRelevantEvents = [];
-  //get the event uris that our sources have reported on over the last three days
+  //get the event uris for events that the left right and center have reported on in the last three days
   const uris = await getUris();
 
   //get detailed event info for the events that are relevant to us and have not yet been saved
@@ -442,9 +445,11 @@ const dailyFetch = async() => {
 
   //get, format, save, associate the articles that were published by all our sources for the last 3 days COST: 21 tokens
   const articles3 = await getArticlesBySource(3);
+  console.log("THREE DAYS AGO ARTICLES FETCHED!");
   const articles2 = await getArticlesBySource(2);
+  console.log("TWO DAYS AGO ARTICLES FETCHED!");
   const articles1 = await getArticlesBySource(1);
-   
+  console.log("ONE DAY AGO ARTICLES FETCHED!");
   console.log('fetched!');
   db.sequelize.close();
 };
