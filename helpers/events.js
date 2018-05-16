@@ -261,6 +261,7 @@ const buildSaveArticle = async (article) => {
     savedArticle = alreadySaved;
   } else {
     savedArticle = await formatted.save();
+    console.log(`saved article ${article.uri}`);
   }
 
   if (event) {
@@ -368,7 +369,7 @@ const associateArticleConceptsOrSubcategories = async (conceptsOrSubcategories, 
         await article.addSubcategory(saved).catch(err => console.log(err));             
       }
     }
-    console.log(`Finished associating ${type} for event ${articleUri}`);
+    console.log(`Finished associating ${type} for article ${articleUri}`);
   } else {
     console.log('We encountered an error retrieving the article: ' + articleUri);
   }  
@@ -418,9 +419,11 @@ const getArticlesBySource = async(daysAgo) => {
 
   for (const source in articles) {
     for (const article of articles[source]) {
-      await buildSaveArticle(article);
-      await associateArticleConceptsOrSubcategories(article.concepts, 'concept', article.uri);
-      await associateArticleConceptsOrSubcategories(article.categories, 'subcategory', article.uri);
+      if (article.eventUri) {
+        await buildSaveArticle(article);
+        await associateArticleConceptsOrSubcategories(article.concepts, 'concept', article.uri);
+        await associateArticleConceptsOrSubcategories(article.categories, 'subcategory', article.uri);
+      }      
     }
   }
   console.log('articles saved');
@@ -449,7 +452,7 @@ const dailyFetch = async() => {
 //fetch additional event info for any newly relevant events from the last 3 days
 const fetchNewlyRelevant = async(daysAgo) => {
   const newlyRelevant = await relevanceCheck(daysAgo);
-  await getEventInfo(uris);
+  await getEventInfo(newlyRelevant);
   console.log('newly relevant events fetched');
   db.sequelize.close();
 };
