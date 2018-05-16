@@ -392,15 +392,19 @@ const getUris = async() => {
 //after saving, checks whether there are any saved unassociated articles in our DB
 const getEventInfo = async(uris) => {
   let unsaved = await findUnsavedEvents(uris);
-  const response = await axios.post(eventInfoLambda, { uris: unsaved });
+  if (sunsaved.length > 0) {
+    const response = await axios.post(eventInfoLambda, { uris: unsaved });
 
-  for (const event of response.data) {
-    let current = await buildSaveEvent(event); 
-    await associateEventConceptsOrSubcategories(event.concepts, 'concept', event.uri);
-    await associateEventConceptsOrSubcategories(event.categories, 'subcategory', event.uri); 
-    await associateArticlesNewEvent(event.uri);
-  }
-  console.log("events saved");
+    for (const event of response.data) {
+      let current = await buildSaveEvent(event); 
+      await associateEventConceptsOrSubcategories(event.concepts, 'concept', event.uri);
+      await associateEventConceptsOrSubcategories(event.categories, 'subcategory', event.uri); 
+      await associateArticlesNewEvent(event.uri);
+    }
+    console.log("events saved");
+  } else {
+    console.log('There are no new events to fetch');
+  }  
 };
 
 //get the articles associated with each event COST: 10 tokens per event
