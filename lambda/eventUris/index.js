@@ -19,13 +19,21 @@ const getDate = (daysAgo) => {
 
 //our MVP seven news sources.  Use these URIs to communicate with ER
 const sourcesURI = {
-  fox: new QueryItems.OR(['foxsports.com', 'foxnews.com','foxbusiness.com', 'nation.foxnews.com', 'fox11online.com', 'q13fox.com', 'radio.foxnews.com', 'fox5ny.com']),
+  fox: 'foxnews.com',
   breitbart: 'breitbart.com',
   huffington: 'huffingtonpost.com',
   msnbc: 'msnbc.com',
   hill: 'thehill.com',
   ap: 'hosted.ap.org',
   times: 'nytimes.com'
+  motherjones: 'motherjones.com',
+  npr: 'npr.org',
+  washingtontimes: 'washingtontimesreporter.com',
+  guardian: 'theguardian.com',
+  latimes: 'latimes.com',
+  federalist: 'thefederalist.com',
+  blaze: 'theblaze.com',
+  wnd: 'wnd.com'
 };
 
 //get lists of event uris by individual news sources
@@ -52,6 +60,14 @@ const getEventUrisByAllSources = async (date) => {
     hill: await getEventUrisByNewsSource(sourcesURI.hill, date),
     ap: await getEventUrisByNewsSource(sourcesURI.ap, date),
     times: await getEventUrisByNewsSource(sourcesURI.times, date),
+    motherjones: await getEventUrisByNewsSource(sourcesURI.motherjones, date),
+    npr: await getEventUrisByNewsSource(sourcesURI.npr, date),
+    washingtontimes: await getEventUrisByNewsSource(sourcesURI.washingontimes, date),
+    guardian: await getEventUrisByNewsSource(sourcesURI.guardian, date),
+    latimes: await getEventUrisByNewsSource(sourcesURI.latimes, date),
+    federalist: await getEventUrisByNewsSource(sourcesURI.federalist, date),
+    blaze: await getEventUrisByNewsSource(sourcesURI.blaze, date),
+    wnd: await getEventUrisByNewsSource(sourcesURI.wnd, date),
   }
 
   //strip the wgt value and only pass along the events in english
