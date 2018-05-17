@@ -219,19 +219,20 @@ const formatArticle = (article) => {
   });
 };
 
-const extractFormatSource = (article) => {
+const extractFormatSource = async(article) => {
   return db.Source.build({
     uri: article.source.uri,
     title: article.source.title,
     importance: article.source.importance,
     image: article.source.image,
     thumbImage: article.source.thumbImage,
-    bias: calculateBias(article.source.title)
+    bias: await calculateBias(article.source.uri)
   });
 };
 
 // a value either between -3 and +3 or -2 and +2 for easy ranking when we have more sources
 const calculateBias = async(sourceUri) => {
+  console.log(sourceUri)
   let biasRating = null;
   const sourcesBias = {
     "-2": ['huffingtonpost.com', 'msnbc.com', 'motherjones.com'],
@@ -243,23 +244,21 @@ const calculateBias = async(sourceUri) => {
   //TO DO: Rank top US news sources with bias
   for (const rating in sourcesBias) {
     if (sourcesBias[rating].includes(sourceUri)) {
-      console.log(`found ${sourceUri} in ${sourcesBias[rating]} `)
-      biasRating = rating;
+      biasRating = parseInt(rating);
     }
   }
 
-  if (biasRating) {
-    let source = await db.Source.find({where:{uri: sourceUri}});
-    let updateValues = { bias: parseInt(biasRating) };
-
-    source.update(updateValues).then((self) => {
-      console.log(self)
-    // here self is your instance, but updated  
-    });
-   
-    console.log(`Bias added to source ${sourceUri}`);   
-  }
   return biasRating;
+};
+
+const updateBiasRating = async(sourceUri, biasRating) => {
+  let updateValues = { bias: parseInt(biasRating) };
+
+  source.update(updateValues).then((updated) => {
+    console.log(`updated ${updated.dataValues.uri} to have the bias of ${biasRating}`);
+  });
+   
+  console.log(`Bias added to source ${sourceUri}`);   
 };
 
 //saving and associating new articles, events, sources, concepts and categories
@@ -488,24 +487,24 @@ const fetchNewlyRelevant = async(daysAgo) => {
   db.sequelize.close();
 };
 
-const updateAllSources = async() => {
-   const allSources = {
-    fox: 'foxnews.com',
-    breitbart: 'breitbart.com',
-    hill: 'thehill.com',
-    ap: 'hosted.ap.org',
-    times: 'nytimes.com',
-    msnbc: 'msnbc.com',
-    huffington: 'huffingtonpost.com',
-  };
-  const sourceUris = Object.values(allSources);
+// const updateAllSources = async() => {
+//    const allSources = {
+//     fox: 'foxnews.com',
+//     breitbart: 'breitbart.com',
+//     hill: 'thehill.com',
+//     ap: 'hosted.ap.org',
+//     times: 'nytimes.com',
+//     msnbc: 'msnbc.com',
+//     huffington: 'huffingtonpost.com',
+//   };
+//   const sourceUris = Object.values(allSources);
 
-  for (const uri of sourceUris) {
-    await calculateBias(uri);
-  }
-}
+//   for (const uri of sourceUris) {
+//     await calculateBias(uri);
+//   }
+// }
 
-//updateAllSources();
+// //updateAllSources();
 
 
 module.exports = {
