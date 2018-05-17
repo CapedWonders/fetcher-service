@@ -231,9 +231,35 @@ const extractFormatSource = (article) => {
 };
 
 // a value either between -3 and +3 or -2 and +2 for easy ranking when we have more sources
-const calculateBias = (sourceTitle) => {
+const calculateBias = async(sourceUri) => {
+  let biasRating = null;
+  const sourcesBias = {
+    "-2": ['huffingtonpost.com', 'msnbc.com', 'motherjones.com'],
+    "-1": ['nytimes.com', 'theguardian.com', 'latimes.com'],
+    "0": ['thehill.com', 'hosted.ap.org', 'npr.org'],
+    "1": ['foxnews.com', 'thefederalist.com', 'washingtontimesreporter.com'],
+    "2": ['breitbart.com', 'wnd.com', 'theblaze.com']
+  }
   //TO DO: Rank top US news sources with bias
-  return null;
+  for (const rating in sourcesBias) {
+    if (sourcesBias[rating].includes(sourceUri)) {
+      console.log(`found ${sourceUri} in ${sourcesBias[rating]} `)
+      biasRating = rating;
+    }
+  }
+
+  if (biasRating) {
+    let source = await db.Source.find({where:{uri: sourceUri}});
+    let updateValues = { bias: parseInt(biasRating) };
+
+    source.update(updateValues).then((self) => {
+      console.log(self)
+    // here self is your instance, but updated  
+    });
+   
+    console.log(`Bias added to source ${sourceUri}`);   
+  }
+  return biasRating;
 };
 
 //saving and associating new articles, events, sources, concepts and categories
@@ -467,6 +493,25 @@ const fetchNewlyRelevant = async(daysAgo) => {
   console.log('newly relevant events fetched');
   db.sequelize.close();
 };
+
+const updateAllSources = async() => {
+   const allSources = {
+    fox: 'foxnews.com',
+    breitbart: 'breitbart.com',
+    hill: 'thehill.com',
+    ap: 'hosted.ap.org',
+    times: 'nytimes.com',
+    msnbc: 'msnbc.com',
+    huffington: 'huffingtonpost.com',
+  };
+  const sourceUris = Object.values(allSources);
+
+  for (const uri of sourceUris) {
+    await calculateBias(uri);
+  }
+}
+
+updateAllSources();
 
 
 module.exports = {
