@@ -505,7 +505,7 @@ const updateAllSources = async() => {
   }
 }
 
-updateAllSources();
+//updateAllSources();
 
 
 module.exports = {
