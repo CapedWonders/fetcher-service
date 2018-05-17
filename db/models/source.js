@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
       unique: true,
       allowNull: false
     },
+    bias: DataTypes.INTEGER,
     title: DataTypes.STRING,
     image: DataTypes.STRING,
     thumbImage: DataTypes.STRING

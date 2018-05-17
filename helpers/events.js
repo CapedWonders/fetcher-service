@@ -219,21 +219,47 @@ const formatArticle = (article) => {
   });
 };
 
-const extractFormatSource = (article) => {
+const extractFormatSource = async(article) => {
   return db.Source.build({
     uri: article.source.uri,
     title: article.source.title,
     importance: article.source.importance,
     image: article.source.image,
     thumbImage: article.source.thumbImage,
-    bias: calculateBias(article.source.title)
+    bias: await calculateBias(article.source.uri)
   });
 };
 
 // a value either between -3 and +3 or -2 and +2 for easy ranking when we have more sources
-const calculateBias = (sourceTitle) => {
+const calculateBias = async(sourceUri) => {
+  console.log(sourceUri)
+  let biasRating = null;
+  const sourcesBias = {
+    "-2": ['huffingtonpost.com', 'msnbc.com', 'motherjones.com'],
+    "-1": ['nytimes.com', 'theguardian.com', 'latimes.com'],
+    "0": ['thehill.com', 'hosted.ap.org', 'npr.org'],
+    "1": ['foxnews.com', 'thefederalist.com', 'washingtontimesreporter.com'],
+    "2": ['breitbart.com', 'wnd.com', 'theblaze.com']
+  }
   //TO DO: Rank top US news sources with bias
-  return null;
+  for (const rating in sourcesBias) {
+    if (sourcesBias[rating].includes(sourceUri)) {
+      biasRating = parseInt(rating);
+    }
+  }
+
+  return biasRating;
+};
+
+const updateBiasRating = async(sourceUri, biasRating) => {
+  let updateValues = { bias: await calculateBias(sourceUri) };
+  let source = await db.Source.find({where:{uri: sourceUri}});
+
+  source.update(updateValues).then((updated) => {
+    console.log(`updated ${updated.dataValues.uri} to have the bias of ${biasRating}`);
+  });
+   
+  console.log(`Bias added to source ${sourceUri}`);   
 };
 
 //saving and associating new articles, events, sources, concepts and categories
@@ -467,6 +493,25 @@ const fetchNewlyRelevant = async(daysAgo) => {
   console.log('newly relevant events fetched');
   db.sequelize.close();
 };
+
+const updateAllSources = async() => {
+   const allSources = {
+    fox: 'foxnews.com',
+    breitbart: 'breitbart.com',
+    hill: 'thehill.com',
+    ap: 'hosted.ap.org',
+    times: 'nytimes.com',
+    msnbc: 'msnbc.com',
+    huffington: 'huffingtonpost.com',
+  };
+  const sourceUris = Object.values(allSources);
+
+  for (const uri of sourceUris) {
+    await updateBiasRating(uri);
+  }
+}
+
+// updateAllSources();
 
 
 module.exports = {
