@@ -406,7 +406,7 @@ const associateArticleConceptsOrSubcategories = async (conceptsOrSubcategories, 
    ********************************************************************* 
 */
 
-//get the uris for the events we care about across all news sources for the last 3 days COST: 35 tokens
+//get the uris for the events we care about across all news sources for the last 3 days COST: 60 tokens
 const getUris = async() => {
   const response = await axios.get(eventUriLambda);
   console.log('uris fetched');
@@ -441,7 +441,7 @@ const getArticlesByEvent = async(uris) => {
   console.log('articles saved');
 };
 
-//get the articles published by the sources we care about on a particular day COST: 1 token per news source
+//get the articles published by the sources we care about on a particular day COST: 1 token per news source (15 tokens per call)
 const getArticlesBySource = async(daysAgo) => {
   const response = await axios.post(articlesBySourceLambda, { daysAgo });
   const { articles, uris } = response.data;
@@ -464,7 +464,7 @@ const getArticlesBySource = async(daysAgo) => {
 };
 
 //once every 24 hours, hit all three lambda functions to get our data into the DB
-//const ~75 tokens
+//costs ~125 tokens
 const dailyFetch = async() => {
   //get the event uris for events that the left right and center have reported on in the last three days
   const uris = await getUris();
@@ -484,6 +484,7 @@ const dailyFetch = async() => {
 };
 
 //fetch additional event info for any newly relevant events from the last 3 days
+//cost ~20 tokens
 const fetchNewlyRelevant = async(daysAgo) => {
   const newlyRelevant = await relevanceCheck(daysAgo);
   await getEventInfo(newlyRelevant);
