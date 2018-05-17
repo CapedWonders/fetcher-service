@@ -238,42 +238,44 @@ const calculateBias = (sourceTitle) => {
 
 //saving and associating new articles, events, sources, concepts and categories
 const buildSaveArticle = async (article) => {
-
+  //if this article has not been assigned by ER to an event yet, ignore it for now
   if (article.eventUri === null) {
     console.log("this article has no associated event");
     return;
   }
-  
-  let formatted = await formatArticle(article);
-  let event = await db.Event.find({where:{uri: article.eventUri}});
-  let source = await db.Source.find({where: {uri: article.source.uri}});
-  let savedArticle;
-
-  if (!source) {
-    source = await extractFormatSource(article);
-    let savedSource = await source.save();
-    console.log(`Saved source ${savedSource.dataValues.uri}`);
-  }
 
   let alreadySaved = await db.Article.find({where: {uri: article.uri}});
+  let event = await db.Event.find({where:{uri: article.eventUri}});
 
-  if (alreadySaved) {
-    savedArticle = alreadySaved;
-  } else {
-    savedArticle = await formatted.save();
+  //if this article isn't already in our system, save it and make sure it's associated to the proper source
+  if (!alreadySaved) {
+    let formatted = await formatArticle(article);   
+    let source = await db.Source.find({where: {uri: article.source.uri}});
+
+    if (!source) {
+      source = await extractFormatSource(article);
+      let savedSource = await source.save();
+      console.log(`Saved source ${savedSource.dataValues.uri}`);
+    }
+
+    alreadySaved = await formatted.save();
     console.log(`saved article ${article.uri}`);
+    await source.addArticle(alreadySaved);
+
+    //if it isn't already associated with a saved event, make it so
+    if (event && article.eventId === null) {
+      await event.addArticle(alreadySaved);
+      console.log(`Article added to event ${event.dataValues.uri}`);
+    }
+    return { article: alreadySaved, new: true};
   }
 
-  if (event) {
-    await event.addArticle(savedArticle);
+  //if we have the associated event in the DB, make sure it's added to the correct event
+  if (event && article.eventId === null) {
+    await event.addArticle(alreadySaved);
     console.log(`Article added to event ${event.dataValues.uri}`);
-  } else {
-    console.log('This event is not yet saved: in buildSaveArticle ' + article.eventUri);
   }
-
-  await source.addArticle(savedArticle);
-
-  return savedArticle;
+  return {article: alreadySaved, new: false};
 };
 
 //TODO: TEST THIS FUNCTION,
@@ -423,10 +425,14 @@ const getArticlesBySource = async(daysAgo) => {
 
   for (const source in articles) {
     for (const article of articles[source]) {
+      //ignore if it has not yet been associated by Event Registry to an event
       if (article.eventUri) {
-        await buildSaveArticle(article);
-        await associateArticleConceptsOrSubcategories(article.concepts, 'concept', article.uri);
-        await associateArticleConceptsOrSubcategories(article.categories, 'subcategory', article.uri);
+        const saved = await buildSaveArticle(article);
+        //only associate concepts and categories if we have not done so before
+        if (saved.new) {
+          await associateArticleConceptsOrSubcategories(article.concepts, 'concept', article.uri);
+          await associateArticleConceptsOrSubcategories(article.categories, 'subcategory', article.uri);
+        }    
       }      
     }
   }
