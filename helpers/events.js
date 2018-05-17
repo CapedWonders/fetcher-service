@@ -252,7 +252,8 @@ const calculateBias = async(sourceUri) => {
 };
 
 const updateBiasRating = async(sourceUri, biasRating) => {
-  let updateValues = { bias: parseInt(biasRating) };
+  let updateValues = { bias: await calculateBias(sourceUri) };
+  let source = await db.Source.find({where:{uri: sourceUri}});
 
   source.update(updateValues).then((updated) => {
     console.log(`updated ${updated.dataValues.uri} to have the bias of ${biasRating}`);
@@ -487,24 +488,24 @@ const fetchNewlyRelevant = async(daysAgo) => {
   db.sequelize.close();
 };
 
-// const updateAllSources = async() => {
-//    const allSources = {
-//     fox: 'foxnews.com',
-//     breitbart: 'breitbart.com',
-//     hill: 'thehill.com',
-//     ap: 'hosted.ap.org',
-//     times: 'nytimes.com',
-//     msnbc: 'msnbc.com',
-//     huffington: 'huffingtonpost.com',
-//   };
-//   const sourceUris = Object.values(allSources);
+const updateAllSources = async() => {
+   const allSources = {
+    fox: 'foxnews.com',
+    breitbart: 'breitbart.com',
+    hill: 'thehill.com',
+    ap: 'hosted.ap.org',
+    times: 'nytimes.com',
+    msnbc: 'msnbc.com',
+    huffington: 'huffingtonpost.com',
+  };
+  const sourceUris = Object.values(allSources);
 
-//   for (const uri of sourceUris) {
-//     await calculateBias(uri);
-//   }
-// }
+  for (const uri of sourceUris) {
+    await updateBiasRating(uri);
+  }
+}
 
-// //updateAllSources();
+// updateAllSources();
 
 
 module.exports = {
