@@ -69,39 +69,80 @@ const getUnassociatedArticlesBySource = async(daysAgo) => {
   return sourcesObj;
 };
 
+    "-2": ['huffingtonpost.com', 'msnbc.com', 'motherjones.com'],
+    "-1": ['nytimes.com', 'theguardian.com', 'latimes.com'],
+    "0": ['thehill.com', 'hosted.ap.org', 'npr.org'],
+    "1": ['foxnews.com', 'thefederalist.com', 'washingtontimesreporter.com'],
+    "2": ['breitbart.com', 'wnd.com', 'theblaze.com']
+
 //get the uris that are shared between news outlets
 const extractReleventEvents = (urisObj) => {
-  //right
-  let fox = new Set(urisObj.fox);
+  /***********
+  far right
+  ***********/
+  let wnd = newSet(urisObj.wnd);
   let breitbart = new Set(urisObj.breitbart);
-  //both outlets have reported
-  let rightAll = new Set([...fox].filter(x => breitbart.has(x)));
-  //at least one outlet has reported
-  let rightAny = new Set([...fox, ...breitbart]);
+  let blaze = new Set(urisObj.blaze);
 
-  //left
+  //all far right outlets have reported
+  let farRightAll = new Set([...breitbart].filter(x => wnd.has(x) && blaze.has(x)));
+  //at least one outlet has reported
+  let farRightAny = new Set([...wnd, ...breitbart, ...blaze]);
+
+  /***********
+     right
+  ***********/
+  let fox = new Set(urisObj.fox);
+  let federalist = new Set(urisObj.federalist);
+  let washingtontimes = new Set(urisObj.washingtontimes);
+
+  //all right outlets have reported
+  let rightAll = new Set([...fox]).filter(x => federalist.has(x) && washingtontimes.has(x));
+  //at least one outlet has reported
+  let rightAny = new Set([...fox, ...federalist, ...washingtontimes]);
+
+  /***********
+     center
+  ***********/
+  let ap = new Set(urisObj.ap);
+  let npr = new Set(urisObj.npr);
+  let hill = new Set(urisObj.hill);
+
+  //all outlets have reported
+  let centerAll = new Set([...ap].filter(x => hill.has(x) && npr.has(x)));
+  //at least one outlet has reported
+  let centerAny = new Set([...ap, ...npr, ...hill]);
+
+
+  /***********
+     left
+  ***********/
+  let times = new Set(urisObj.times);
+  let guardian = new Set(urisObj.guardian);
+  let latimes = new Set(urisObj.latimes);
+
+  //all outlets have reported
+  let leftAll = new Set([...times].filter(x => guardian.has(x) && latimes.has(x)));
+  //at least one outlet has reported
+  let leftAny = new Set([...times, ...guardian, ...latimes]);
+
+ 
+  /***********
+     far left
+  ***********/
   let huffington = new Set(urisObj.huffington);
   let msnbc = new Set(urisObj.msnbc);
+  let motherjones = new Set(urisObj.motherjones);
   //both outlets have reported
-  let leftAll = new Set([...huffington].filter(x => msnbc.has(x)));
+  let farLeftAll = new Set([...huffington].filter(x => msnbc.has(x) && motherjones.has(x)));
   //at least one outlet has reported
-  let leftAny = new Set([...huffington, ...msnbc]);
+  let farLeftAny = new Set([...huffington, ...msnbc, ...motherjones]);
 
-  //center
-  let ap = new Set(urisObj.ap);
-  let times = new Set(urisObj.times);
-  let hill = new Set(urisObj.hill);
-  //all outlets have reported
-  let centerAll = new Set([...ap].filter(x => hill.has(x) && times.has(x)));
-  //at least one outlet has reported
-  let centerAny = new Set([...ap, ...times, ...hill]);
-
-  //all 7 sources have reported
-  let allSet = new Set([...rightAll].filter(x => leftAll.has(x) && centerAll.has(x)));
-  let allArray = [...allSet];
 
   //at least one of left, right and center have reported
-  let spectrumSet = new Set([...rightAny].filter(x => leftAny.has(x) && centerAny.has(x)));
+  let rightAndFarRight = new Set([...rightAny, ...farRightAny]);
+  let leftAndFarLeft = new Set([...leftAny, ...farLeftAny]);
+  let spectrumSet = new Set([...rightAndFarRight]).filter(x => leftAndFarLeft.has(x) && centerAny.has(x));
   let spectrumArray = [...spectrumSet];
   
   return spectrumArray;
