@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Source.associate = function(models) {
     Source.hasMany(models.Article);
+    Source.belongsTo(models.Bias);
   };
   return Source;
 };
