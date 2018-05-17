@@ -553,13 +553,12 @@ describe('buildASaveArticle', function() {
     const test = lambda4.articles.fox[0];
     const before = await db.Article.findAll({where: {}});
     expect(before.length).toEqual(0);
-    console.log(test.uri)
 
     const saved = await buildSaveArticle(test);
     const after = await db.Article.find({where:{uri: test.uri}});
   
     expect(after).toBeTruthy();
-    expect(after.dataValues.uri).toEqual(saved.dataValues.uri);
+    expect(after.dataValues.uri).toEqual(saved.article.dataValues.uri);
     done();
   });
 
@@ -592,8 +591,26 @@ describe('buildASaveArticle', function() {
 
     expect(after1.length).toBeGreaterThan(0);
     expect(after2.length).toBeGreaterThan(0);
-    expect(savedAgain.dataValues.uri).toEqual(saved.dataValues.uri);
+    expect(savedAgain.article.dataValues.uri).toEqual(savedAgain.article.dataValues.uri);
     expect(after2.length).toEqual(after1.length);
+    done();
+  });
+
+  it('should return whether or not an article is already saved in the DB', async function(done) {
+    expect.assertions(4);
+
+    const test = lambda4.articles.fox[0];
+    const before = await db.Article.findAll({where: {}});
+    expect(before.length).toEqual(0);
+
+    const saved = await buildSaveArticle(test);
+    const after1 = await db.Article.findAll({where:{}});
+    const savedAgain = await buildSaveArticle(test);
+    const after2 = await db.Article.findAll({where:{}});
+
+    expect(saved.new).toBeTruthy();
+    expect(savedAgain.new).not.toBeTruthy();
+    expect(savedAgain.article.dataValues.uri).toEqual(savedAgain.article.dataValues.uri);
     done();
   });
 
