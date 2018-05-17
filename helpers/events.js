@@ -491,26 +491,6 @@ const fetchNewlyRelevant = async(daysAgo) => {
   db.sequelize.close();
 };
 
-const updateAllSources = async() => {
-   const allSources = {
-    fox: 'foxnews.com',
-    breitbart: 'breitbart.com',
-    hill: 'thehill.com',
-    ap: 'hosted.ap.org',
-    times: 'nytimes.com',
-    msnbc: 'msnbc.com',
-    huffington: 'huffingtonpost.com',
-  };
-  const sourceUris = Object.values(allSources);
-
-  for (const uri of sourceUris) {
-    await updateBiasRating(uri);
-  }
-}
-
-// updateAllSources();
-
-
 module.exports = {
   associateEventConceptsOrSubcategories,
   buildSaveConcept,
