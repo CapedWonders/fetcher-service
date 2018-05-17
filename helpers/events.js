@@ -219,19 +219,19 @@ const formatArticle = (article) => {
   });
 };
 
-const extractFormatSource = async(article) => {
+const extractFormatSource = (article) => {
   return db.Source.build({
     uri: article.source.uri,
     title: article.source.title,
     importance: article.source.importance,
     image: article.source.image,
     thumbImage: article.source.thumbImage,
-    bias: await calculateBias(article.source.uri)
+    bias: calculateBias(article.source.uri)
   });
 };
 
 // a value either between -3 and +3 or -2 and +2 for easy ranking when we have more sources
-const calculateBias = async(sourceUri) => {
+const calculateBias = (sourceUri) => {
   console.log(sourceUri)
   let biasRating = null;
   const sourcesBias = {
@@ -279,7 +279,7 @@ const buildSaveArticle = async (article) => {
     let source = await db.Source.find({where: {uri: article.source.uri}});
 
     if (!source) {
-      source = await extractFormatSource(article);
+      source = extractFormatSource(article);
       let savedSource = await source.save();
       console.log(`Saved source ${savedSource.dataValues.uri}`);
     }
@@ -535,6 +535,7 @@ module.exports = {
   associateArticleConceptsOrSubcategories,
   getUnassociatedArticlesBySource,
   fetchNewlyRelevant,
+  calculateBias
 };
 
 

@@ -6,7 +6,7 @@ const db = require('../db/models/index.js');
 
 const { associateEventConceptsOrSubcategories, buildSaveConcept, buildSaveSubcategory, buildSaveEvent, formatSubcategory,
   formatConcept, formatEvent, formatArticle, extractReleventEvents, buildSaveArticle, extractFormatSource, isEventRelevant, associateArticlesNewEvent,
-  associateArticleConceptsOrSubcategories, getUnassociatedArticlesBySource } = require('../helpers/events.js');
+  associateArticleConceptsOrSubcategories, getUnassociatedArticlesBySource, calculateBias } = require('../helpers/events.js');
 if (process.env.db_name === "eco_chamber") {
   throw error
 }
@@ -577,7 +577,7 @@ describe('buildASaveArticle', function() {
     done();
   });
 
-  it.only('should retrive an article if it does exist in the DB', async function(done) {
+  it('should retrive an article if it does exist in the DB', async function(done) {
     expect.assertions(5);
 
     const test = lambda4.articles.fox[0];
