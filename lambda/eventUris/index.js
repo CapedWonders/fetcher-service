@@ -25,7 +25,7 @@ const sourcesURI = {
   msnbc: 'msnbc.com',
   hill: 'thehill.com',
   ap: 'hosted.ap.org',
-  times: 'nytimes.com'
+  times: 'nytimes.com',
   motherjones: 'motherjones.com',
   npr: 'npr.org',
   washingtontimes: 'washingtontimesreporter.com',

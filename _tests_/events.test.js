@@ -5,7 +5,7 @@ const { lambda1, lambda2, lambda3, lambda4, articleWithConcepts, sampleEvent, la
 const db = require('../db/models/index.js');
 
 const { associateEventConceptsOrSubcategories, buildSaveConcept, buildSaveSubcategory, buildSaveEvent, formatSubcategory,
-  formatConcept, formatEvent, formatArticle, extractReleventEvents, buildSaveArticle, extractFormatSource, isEventRelevant, associateArticlesNewEvent,
+  formatConcept, formatEvent, formatArticle, extractReleventEvents, buildSaveArticle, extractFormatSource, associateArticlesNewEvent,
   associateArticleConceptsOrSubcategories, getUnassociatedArticlesBySource, calculateBias } = require('../helpers/events.js');
 if (process.env.db_name === "eco_chamber") {
   throw error

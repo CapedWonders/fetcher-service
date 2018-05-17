@@ -82,7 +82,7 @@ const extractReleventEvents = (urisObj) => {
   /***********
   far right
   ***********/
-  let wnd = newSet(urisObj.wnd);
+  let wnd = new Set(urisObj.wnd);
   let breitbart = new Set(urisObj.breitbart);
   let blaze = new Set(urisObj.blaze);
 
@@ -508,7 +508,6 @@ module.exports = {
   dailyFetch,
   relevanceCheck,
   findUnsavedEvents,
-  isEventRelevant,
   associateArticlesNewEvent,
   associateArticleConceptsOrSubcategories,
   getUnassociatedArticlesBySource,
