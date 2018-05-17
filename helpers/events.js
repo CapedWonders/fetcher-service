@@ -252,7 +252,7 @@ const calculateBias = (sourceUri) => {
 };
 
 const updateBiasRating = async(sourceUri, biasRating) => {
-  let updateValues = { bias: await calculateBias(sourceUri) };
+  let updateValues = { bias: calculateBias(sourceUri) };
   let source = await db.Source.find({where:{uri: sourceUri}});
 
   source.update(updateValues).then((updated) => {
