@@ -36,7 +36,15 @@ const getUnassociatedArticlesBySource = async(daysAgo) => {
     ap: 'hosted.ap.org',
     times: 'nytimes.com',
     msnbc: 'msnbc.com',
-    huffington: 'huffingtonpost.com',
+    huffington: 'huffingtonpost.com',    
+    motherjones: 'motherjones.com',
+    npr: 'npr.org',
+    washingtontimes: 'washingtontimesreporter.com',
+    guardian: 'theguardian.com',
+    latimes: 'latimes.com',
+    federalist: 'thefederalist.com',
+    blaze: 'theblaze.com',
+    wnd: 'wnd.com'
   };
   const sourceUris = Object.values(allSources);
   
@@ -68,12 +76,6 @@ const getUnassociatedArticlesBySource = async(daysAgo) => {
 
   return sourcesObj;
 };
-
-    "-2": ['huffingtonpost.com', 'msnbc.com', 'motherjones.com'],
-    "-1": ['nytimes.com', 'theguardian.com', 'latimes.com'],
-    "0": ['thehill.com', 'hosted.ap.org', 'npr.org'],
-    "1": ['foxnews.com', 'thefederalist.com', 'washingtontimesreporter.com'],
-    "2": ['breitbart.com', 'wnd.com', 'theblaze.com']
 
 //get the uris that are shared between news outlets
 const extractReleventEvents = (urisObj) => {
@@ -153,52 +155,6 @@ const relevanceCheck = async(daysAgo) => {
   const sources = await getUnassociatedArticlesBySource(daysAgo);
   const relevant = extractReleventEvents(sources);
   return relevant;
-};
-
-//TODO: TEST THIS FUNCTION
-
-//check the DB to see if an unsaved event meets our criteria of being relevant
-const isEventRelevant = async(eventUri) => { 
-  const sourceUrisRight = ['foxnews.com', 'breitbart.com'];
-  const sourceUrisCenter = ['hosted.ap.org', 'nytimes.com', 'thehill.com'];
-  const sourceUrisLeft = ['msnbc.com', 'huffingtonpost.com'];
-
-  const sourcesRight = await db.Source.findAll({ where: { uri: sourceUrisRight } });
-  const sourcesCenter = await db.Source.findAll({ where: { uri: sourceUrisCenter } });
-  const sourcesLeft = await db.Source.findAll({ where: { uri: sourceUrisLeft } });
-
-  const sourceIdsRight = sourcesRight.map(source => source.dataValues.id);
-  const sourceIdsCenter = sourcesCenter.map(source => source.dataValues.id);
-  const sourceIdsLeft = sourcesLeft.map(source => source.dataValues.id);
-
-  const articlesRight = await db.Article.findAll({
-    where: {
-      eventUri: eventUri,
-      sourceId: sourceIdsRight,
-    }
-  });
-
-  const articlesCenter = await db.Article.findAll({
-    where: {
-      eventUri: eventUri,
-      sourceId: sourceIdsCenter,
-    }
-  });
-
-  const articlesLeft = await db.Article.findAll({
-    where: {
-      eventUri: eventUri,
-      sourceId: sourceIdsLeft,
-    }
-  });
-
-  if (articlesRight.length > 0 && articlesCenter.length > 0 && articlesLeft.length > 0) {
-    console.log('relevant');
-    return true;
-  } else {
-    console.log('not relevant')
-    return false;
-  }
 };
 
 const findUnsavedEvents = async(uris) => {
