@@ -78,6 +78,7 @@ const getUnassociatedArticlesBySource = async(daysAgo) => {
 };
 
 //get the uris that are shared between news outlets
+//TODO:  test new lambda URI function, save results, update test for extractReleventEvents
 const extractReleventEvents = (urisObj) => {
   /***********
   far right
@@ -227,7 +228,7 @@ const extractFormatSource = (article) => {
   });
 };
 
-// a value either between -3 and +3 or -2 and +2 for easy ranking when we have more sources
+// a value between -2 and +2 for easy ranking 
 const calculateBias = (sourceUri) => {
   console.log(sourceUri)
   let biasRating = null;
@@ -238,7 +239,7 @@ const calculateBias = (sourceUri) => {
     "1": ['foxnews.com', 'thefederalist.com', 'washingtontimesreporter.com'],
     "2": ['breitbart.com', 'wnd.com', 'theblaze.com']
   }
-  //TO DO: Rank top US news sources with bias
+
   for (const rating in sourcesBias) {
     if (sourcesBias[rating].includes(sourceUri)) {
       biasRating = parseInt(rating);
