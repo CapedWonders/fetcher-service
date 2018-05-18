@@ -36,7 +36,15 @@ const getUnassociatedArticlesBySource = async(daysAgo) => {
     ap: 'hosted.ap.org',
     times: 'nytimes.com',
     msnbc: 'msnbc.com',
-    huffington: 'huffingtonpost.com',
+    huffington: 'huffingtonpost.com',    
+    motherjones: 'motherjones.com',
+    npr: 'npr.org',
+    washingtontimes: 'washingtontimesreporter.com',
+    guardian: 'theguardian.com',
+    latimes: 'latimes.com',
+    federalist: 'thefederalist.com',
+    blaze: 'theblaze.com',
+    wnd: 'wnd.com'
   };
   const sourceUris = Object.values(allSources);
   
@@ -70,38 +78,74 @@ const getUnassociatedArticlesBySource = async(daysAgo) => {
 };
 
 //get the uris that are shared between news outlets
+//TODO:  test new lambda URI function, save results, update test for extractReleventEvents
 const extractReleventEvents = (urisObj) => {
-  //right
-  let fox = new Set(urisObj.fox);
+  /***********
+  far right
+  ***********/
+  let wnd = new Set(urisObj.wnd);
   let breitbart = new Set(urisObj.breitbart);
-  //both outlets have reported
-  let rightAll = new Set([...fox].filter(x => breitbart.has(x)));
-  //at least one outlet has reported
-  let rightAny = new Set([...fox, ...breitbart]);
+  let blaze = new Set(urisObj.blaze);
 
-  //left
+  //all far right outlets have reported
+  let farRightAll = new Set([...breitbart].filter(x => wnd.has(x) && blaze.has(x)));
+  //at least one outlet has reported
+  let farRightAny = new Set([...wnd, ...breitbart, ...blaze]);
+
+  /***********
+     right
+  ***********/
+  let fox = new Set(urisObj.fox);
+  let federalist = new Set(urisObj.federalist);
+  let washingtontimes = new Set(urisObj.washingtontimes);
+
+  //all right outlets have reported
+  let rightAll = new Set([...fox].filter(x => federalist.has(x) && washingtontimes.has(x)));
+  //at least one outlet has reported
+  let rightAny = new Set([...fox, ...federalist, ...washingtontimes]);
+
+  /***********
+     center
+  ***********/
+  let ap = new Set(urisObj.ap);
+  let npr = new Set(urisObj.npr);
+  let hill = new Set(urisObj.hill);
+
+  //all outlets have reported
+  let centerAll = new Set([...ap].filter(x => hill.has(x) && npr.has(x)));
+  //at least one outlet has reported
+  let centerAny = new Set([...ap, ...npr, ...hill]);
+
+
+  /***********
+     left
+  ***********/
+  let times = new Set(urisObj.times);
+  let guardian = new Set(urisObj.guardian);
+  let latimes = new Set(urisObj.latimes);
+
+  //all outlets have reported
+  let leftAll = new Set([...times].filter(x => guardian.has(x) && latimes.has(x)));
+  //at least one outlet has reported
+  let leftAny = new Set([...times, ...guardian, ...latimes]);
+
+ 
+  /***********
+     far left
+  ***********/
   let huffington = new Set(urisObj.huffington);
   let msnbc = new Set(urisObj.msnbc);
+  let motherjones = new Set(urisObj.motherjones);
   //both outlets have reported
-  let leftAll = new Set([...huffington].filter(x => msnbc.has(x)));
+  let farLeftAll = new Set([...huffington].filter(x => msnbc.has(x) && motherjones.has(x)));
   //at least one outlet has reported
-  let leftAny = new Set([...huffington, ...msnbc]);
+  let farLeftAny = new Set([...huffington, ...msnbc, ...motherjones]);
 
-  //center
-  let ap = new Set(urisObj.ap);
-  let times = new Set(urisObj.times);
-  let hill = new Set(urisObj.hill);
-  //all outlets have reported
-  let centerAll = new Set([...ap].filter(x => hill.has(x) && times.has(x)));
-  //at least one outlet has reported
-  let centerAny = new Set([...ap, ...times, ...hill]);
-
-  //all 7 sources have reported
-  let allSet = new Set([...rightAll].filter(x => leftAll.has(x) && centerAll.has(x)));
-  let allArray = [...allSet];
 
   //at least one of left, right and center have reported
-  let spectrumSet = new Set([...rightAny].filter(x => leftAny.has(x) && centerAny.has(x)));
+  let rightAndFarRight = new Set([...rightAny, ...farRightAny]);
+  let leftAndFarLeft = new Set([...leftAny, ...farLeftAny]);
+  let spectrumSet = new Set([...rightAndFarRight].filter(x => leftAndFarLeft.has(x) && centerAny.has(x)));
   let spectrumArray = [...spectrumSet];
   
   return spectrumArray;
@@ -112,52 +156,6 @@ const relevanceCheck = async(daysAgo) => {
   const sources = await getUnassociatedArticlesBySource(daysAgo);
   const relevant = extractReleventEvents(sources);
   return relevant;
-};
-
-//TODO: TEST THIS FUNCTION
-
-//check the DB to see if an unsaved event meets our criteria of being relevant
-const isEventRelevant = async(eventUri) => { 
-  const sourceUrisRight = ['foxnews.com', 'breitbart.com'];
-  const sourceUrisCenter = ['hosted.ap.org', 'nytimes.com', 'thehill.com'];
-  const sourceUrisLeft = ['msnbc.com', 'huffingtonpost.com'];
-
-  const sourcesRight = await db.Source.findAll({ where: { uri: sourceUrisRight } });
-  const sourcesCenter = await db.Source.findAll({ where: { uri: sourceUrisCenter } });
-  const sourcesLeft = await db.Source.findAll({ where: { uri: sourceUrisLeft } });
-
-  const sourceIdsRight = sourcesRight.map(source => source.dataValues.id);
-  const sourceIdsCenter = sourcesCenter.map(source => source.dataValues.id);
-  const sourceIdsLeft = sourcesLeft.map(source => source.dataValues.id);
-
-  const articlesRight = await db.Article.findAll({
-    where: {
-      eventUri: eventUri,
-      sourceId: sourceIdsRight,
-    }
-  });
-
-  const articlesCenter = await db.Article.findAll({
-    where: {
-      eventUri: eventUri,
-      sourceId: sourceIdsCenter,
-    }
-  });
-
-  const articlesLeft = await db.Article.findAll({
-    where: {
-      eventUri: eventUri,
-      sourceId: sourceIdsLeft,
-    }
-  });
-
-  if (articlesRight.length > 0 && articlesCenter.length > 0 && articlesLeft.length > 0) {
-    console.log('relevant');
-    return true;
-  } else {
-    console.log('not relevant')
-    return false;
-  }
 };
 
 const findUnsavedEvents = async(uris) => {
@@ -230,7 +228,7 @@ const extractFormatSource = (article) => {
   });
 };
 
-// a value either between -3 and +3 or -2 and +2 for easy ranking when we have more sources
+// a value between -2 and +2 for easy ranking 
 const calculateBias = (sourceUri) => {
   console.log(sourceUri)
   let biasRating = null;
@@ -241,7 +239,7 @@ const calculateBias = (sourceUri) => {
     "1": ['foxnews.com', 'thefederalist.com', 'washingtontimesreporter.com'],
     "2": ['breitbart.com', 'wnd.com', 'theblaze.com']
   }
-  //TO DO: Rank top US news sources with bias
+
   for (const rating in sourcesBias) {
     if (sourcesBias[rating].includes(sourceUri)) {
       biasRating = parseInt(rating);
@@ -409,7 +407,7 @@ const associateArticleConceptsOrSubcategories = async (conceptsOrSubcategories, 
    ********************************************************************* 
 */
 
-//get the uris for the events we care about across all news sources for the last 3 days COST: 35 tokens
+//get the uris for the events we care about across all news sources for the last 3 days COST: 60 tokens
 const getUris = async() => {
   const response = await axios.get(eventUriLambda);
   console.log('uris fetched');
@@ -444,7 +442,7 @@ const getArticlesByEvent = async(uris) => {
   console.log('articles saved');
 };
 
-//get the articles published by the sources we care about on a particular day COST: 1 token per news source
+//get the articles published by the sources we care about on a particular day COST: 1 token per news source (15 tokens per call)
 const getArticlesBySource = async(daysAgo) => {
   const response = await axios.post(articlesBySourceLambda, { daysAgo });
   const { articles, uris } = response.data;
@@ -467,7 +465,7 @@ const getArticlesBySource = async(daysAgo) => {
 };
 
 //once every 24 hours, hit all three lambda functions to get our data into the DB
-//const ~75 tokens
+//costs ~125 tokens
 const dailyFetch = async() => {
   //get the event uris for events that the left right and center have reported on in the last three days
   const uris = await getUris();
@@ -487,32 +485,13 @@ const dailyFetch = async() => {
 };
 
 //fetch additional event info for any newly relevant events from the last 3 days
+//cost ~20 tokens
 const fetchNewlyRelevant = async(daysAgo) => {
   const newlyRelevant = await relevanceCheck(daysAgo);
   await getEventInfo(newlyRelevant);
   console.log('newly relevant events fetched');
   db.sequelize.close();
 };
-
-const updateAllSources = async() => {
-   const allSources = {
-    fox: 'foxnews.com',
-    breitbart: 'breitbart.com',
-    hill: 'thehill.com',
-    ap: 'hosted.ap.org',
-    times: 'nytimes.com',
-    msnbc: 'msnbc.com',
-    huffington: 'huffingtonpost.com',
-  };
-  const sourceUris = Object.values(allSources);
-
-  for (const uri of sourceUris) {
-    await updateBiasRating(uri);
-  }
-}
-
-// updateAllSources();
-
 
 module.exports = {
   associateEventConceptsOrSubcategories,
@@ -530,7 +509,6 @@ module.exports = {
   dailyFetch,
   relevanceCheck,
   findUnsavedEvents,
-  isEventRelevant,
   associateArticlesNewEvent,
   associateArticleConceptsOrSubcategories,
   getUnassociatedArticlesBySource,
