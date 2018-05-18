@@ -29,7 +29,15 @@ const sourcesURI = {
   msnbc: 'msnbc.com',
   hill: 'thehill.com',
   ap: 'hosted.ap.org',
-  times: 'nytimes.com'
+  times: 'nytimes.com',
+  motherjones: 'motherjones.com',
+  npr: 'npr.org',
+  washingtontimes: 'washingtontimesreporter.com',
+  guardian: 'theguardian.com',
+  latimes: 'latimes.com',
+  federalist: 'thefederalist.com',
+  blaze: 'theblaze.com',
+  wnd: 'wnd.com'
 };
 
 //helper to retrieve all articles published yesterday by news outlet
@@ -60,7 +68,15 @@ const getAllArticles = async(daysAgo) => {
     hill: await getArticlesBySource(sourcesURI.hill, daysAgo),
     ap: await getArticlesBySource(sourcesURI.ap, daysAgo),
     times: await getArticlesBySource(sourcesURI.times, daysAgo),
-  };
+    motherjones: await getArticlesBySource(sourcesURI.motherjones, daysAgo),
+    npr: await getArticlesBySource(sourcesURI.motherjones, daysAgo),
+    washingtontimes: await getArticlesBySource(sourcesURI.washingtontimes, daysAgo),
+    guardian: await getArticlesBySource(sourcesURI.guardian, daysAgo),
+    latimes: await getArticlesBySource(sourcesURI.latimes, daysAgo),
+    federalist: await getArticlesBySource(sourcesURI.federalist, daysAgo),
+    blaze: await getArticlesBySource(sourcesURI.blaze, daysAgo),
+    wnd: await getArticlesBySource(sourcesURI.wnd, daysAgo)
+    };
   return articles;
 };
 

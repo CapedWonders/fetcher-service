@@ -1,11 +1,11 @@
 //fake data lambda1=eventUris, lambda2=events, lambda3=articles by event, lambda4=articles by source
-const { lambda1, lambda2, lambda3, lambda4, articleWithConcepts, sampleEvent } = require('./sampleData.js');
+const { lambda1, lambda2, lambda3, lambda4, articleWithConcepts, sampleEvent, lambda1All } = require('./sampleData.js');
 
 //db models
 const db = require('../db/models/index.js');
 
 const { associateEventConceptsOrSubcategories, buildSaveConcept, buildSaveSubcategory, buildSaveEvent, formatSubcategory,
-  formatConcept, formatEvent, formatArticle, extractReleventEvents, buildSaveArticle, extractFormatSource, isEventRelevant, associateArticlesNewEvent,
+  formatConcept, formatEvent, formatArticle, extractReleventEvents, buildSaveArticle, extractFormatSource, associateArticlesNewEvent,
   associateArticleConceptsOrSubcategories, getUnassociatedArticlesBySource, calculateBias } = require('../helpers/events.js');
 if (process.env.db_name === "eco_chamber") {
   throw error
@@ -430,26 +430,30 @@ describe('associateArticleConceptsOrSubcategories', function() {
 
 describe('extractReleventEvents', function() {
 
-  it('given an object of uris by news source, should returnan array of uris related to the policital spectrum', function(done) { 
+  it('given an object of uris by news source, should return an array of uris related to the policital spectrum', function(done) { 
   
-    const uris = extractReleventEvents(lambda1.data);
+    const uris = extractReleventEvents(lambda1All.data);
     expect(Array.isArray(uris)).toBe(true);
     expect(uris.length).toBeGreaterThan(0);
     done();
   });
 
   it('should return events that have been reported on by right, middle and center', function(done) {
-    const uris = extractReleventEvents(lambda1.data);
-    const right = lambda1.data.fox.concat(lambda1.data.breitbart);
-    const left = lambda1.data.huffington.concat(lambda1.data.msnbc);
-    const center = lambda1.data.ap.concat(lambda1.data.times.concat(lambda1.data.hill));
+    const uris = extractReleventEvents(lambda1All);
+    
+    const right = lambda1All.data.breitbart.concat(lambda1All.data.blaze).concat(lambda1All.data.wnd)
+                  .concat(lambda1All.data.fox).concat(lambda1All.data.washingtontimes).concat(lambda1All.data.federalist);
+
+    const left = lambda1All.data.huffington.concat(lambda1All.data.times).concat(lambda1All.data.guardian).concat(lambda1All.data.latimes)
+                 .concat(lambda1All.data.huffington).concat(lambda1All.data.msnbc).concat(lambda1All.data.motherjones);
+
+    const center = lambda1All.data.ap.concat(lambda1All.data.hill).concat(lambda1All.data.npr);
 
     for (const uri of uris) {
       expect(right).toContain(uri);
       expect(left).toContain(uri);
       expect(center).toContain(uri);
     }
-
     done();
   });
 });
