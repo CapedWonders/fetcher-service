@@ -100,7 +100,7 @@ const extractReleventEvents = (urisObj) => {
   let washingtontimes = new Set(urisObj.washingtontimes);
 
   //all right outlets have reported
-  let rightAll = new Set([...fox]).filter(x => federalist.has(x) && washingtontimes.has(x));
+  let rightAll = new Set([...fox].filter(x => federalist.has(x) && washingtontimes.has(x)));
   //at least one outlet has reported
   let rightAny = new Set([...fox, ...federalist, ...washingtontimes]);
 
@@ -145,7 +145,7 @@ const extractReleventEvents = (urisObj) => {
   //at least one of left, right and center have reported
   let rightAndFarRight = new Set([...rightAny, ...farRightAny]);
   let leftAndFarLeft = new Set([...leftAny, ...farLeftAny]);
-  let spectrumSet = new Set([...rightAndFarRight]).filter(x => leftAndFarLeft.has(x) && centerAny.has(x));
+  let spectrumSet = new Set([...rightAndFarRight].filter(x => leftAndFarLeft.has(x) && centerAny.has(x)));
   let spectrumArray = [...spectrumSet];
   
   return spectrumArray;

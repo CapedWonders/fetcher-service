@@ -432,16 +432,28 @@ describe('extractReleventEvents', function() {
 
   it('given an object of uris by news source, should return an array of uris related to the policital spectrum', function(done) { 
   
-    const uris = extractReleventEvents(lambda1.data);
+    const uris = extractReleventEvents(lambda1All.data);
     expect(Array.isArray(uris)).toBe(true);
     expect(uris.length).toBeGreaterThan(0);
     done();
   });
 
   it('should return events that have been reported on by right, middle and center', function(done) {
-    const uris = extractReleventEvents(lambda1.data);
+    const uris = extractReleventEvents(lambda1All);
     
-    const right = lambda1.data.breitbart.concat(lambda1.data.fox)
+    const right = lambda1All.data.breitbart.concat(lambda1All.data.blaze).concat(lambda1All.data.wnd)
+                  .concat(lambda1All.data.fox).concat(lambda1All.data.washingtontimes).concat(lambda1All.data.federalist);
+
+    const left = lambda1All.data.huffington.concat(lambda1All.data.times).concat(lambda1All.data.guardian).concat(lambda1All.data.latimes)
+                 .concat(lambda1All.data.huffington).concat(lambda1All.data.msnbc).concat(lambda1All.data.motherjones);
+
+    const center = lambda1All.data.ap.concat(lambda1All.data.hill).concat(lambda1All.data.npr);
+
+    for (const uri of uris) {
+      expect(right).toContain(uri);
+      expect(left).toContain(uri);
+      expect(center).toContain(uri);
+    }
     done();
   });
 });
