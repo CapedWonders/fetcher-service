@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "eventregistry": "^1.2.1"
+    "eventregistry": "^1.2.2"
   }
 }
