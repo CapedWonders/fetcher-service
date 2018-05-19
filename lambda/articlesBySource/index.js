@@ -29,7 +29,7 @@ const sourcesURI = {
   msnbc: 'msnbc.com',
   hill: 'thehill.com',
   ap: 'hosted.ap.org',
-  times: 'nytimes.com',
+  times: 'nytimes.com'
 };
 
 //helper to retrieve all articles published yesterday by news outlet
@@ -46,6 +46,7 @@ const getArticlesBySource = async(sourceUri, daysAgo) => {
   const requestArticlesInfo = new RequestArticlesInfo({page: 1, count: 100, returnInfo: returnInfo});
   q.setRequestedResult(requestArticlesInfo);
   const response = await er.execQuery(q);
+  console.log(response);
   return response.articles.results;
 };
 
@@ -59,7 +60,7 @@ const getAllArticles = async(daysAgo) => {
     msnbc: await getArticlesBySource(sourcesURI.msnbc, daysAgo),
     hill: await getArticlesBySource(sourcesURI.hill, daysAgo),
     ap: await getArticlesBySource(sourcesURI.ap, daysAgo),
-    times: await getArticlesBySource(sourcesURI.times, daysAgo),
+    times: await getArticlesBySource(sourcesURI.times, daysAgo)
   };
   return articles;
 };
