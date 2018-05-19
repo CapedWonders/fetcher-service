@@ -446,7 +446,7 @@ const getArticlesByEvent = async(uris) => {
 const getArticlesBySource = async(daysAgo) => {
   const response = await axios.post(articlesBySourceLambda, { daysAgo });
   const response2 = await axios.post(secondArticlesBySourceLambda, { daysAgo });
-  const articles = Object.assign(response.data.articles}, response2.data.articles);
+  const articles = Object.assign(response.data.articles, response2.data.articles);
   const uris = Object.assign(response.data.uris, response2.data.uris);
 
   for (const source in articles) {
