@@ -42,7 +42,7 @@ const getUnassociatedArticlesBySource = async(daysAgo) => {
     washingtontimes: 'washingtontimesreporter.com',
     guardian: 'theguardian.com',
     latimes: 'latimes.com',
-    federalist: 'thefederalist.com',
+    ijr: 'ijr.com',
     blaze: 'theblaze.com',
     wnd: 'wnd.com'
   };
@@ -96,13 +96,13 @@ const extractReleventEvents = (urisObj) => {
      right
   ***********/
   let fox = new Set(urisObj.fox);
-  let federalist = new Set(urisObj.federalist);
+  let ijr = new Set(urisObj.ijr);
   let washingtontimes = new Set(urisObj.washingtontimes);
 
   //all right outlets have reported
-  let rightAll = new Set([...fox].filter(x => federalist.has(x) && washingtontimes.has(x)));
+  let rightAll = new Set([...fox].filter(x => ijr.has(x) && washingtontimes.has(x)));
   //at least one outlet has reported
-  let rightAny = new Set([...fox, ...federalist, ...washingtontimes]);
+  let rightAny = new Set([...fox, ...ijr, ...washingtontimes]);
 
   /***********
      center
@@ -258,7 +258,7 @@ const calculateBias = (sourceUri) => {
     "-2": ['huffingtonpost.com', 'msnbc.com', 'motherjones.com'],
     "-1": ['nytimes.com', 'theguardian.com', 'latimes.com'],
     "0": ['thehill.com', 'hosted.ap.org', 'npr.org'],
-    "1": ['foxnews.com', 'thefederalist.com', 'washingtontimesreporter.com'],
+    "1": ['foxnews.com', 'ijr.com', 'washingtontimesreporter.com'],
     "2": ['breitbart.com', 'wnd.com', 'theblaze.com']
   }
 
