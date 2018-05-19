@@ -445,7 +445,9 @@ const getArticlesByEvent = async(uris) => {
 //get the articles published by the sources we care about on a particular day COST: 1 token per news source (15 tokens per call)
 const getArticlesBySource = async(daysAgo) => {
   const response = await axios.post(articlesBySourceLambda, { daysAgo });
-  const { articles, uris } = response.data;
+  const response2 = await axios.post(secondArticlesBySourceLambda, { daysAgo });
+  const articles = Object.assign(response.data.articles, response2.data.articles);
+  const uris = Object.assign(response.data.uris, response2.data.uris);
 
   for (const source in articles) {
     for (const article of articles[source]) {
