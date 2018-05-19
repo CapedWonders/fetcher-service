@@ -12,7 +12,7 @@ const _ = require('lodash');
 const moment = require('moment');
 
 //lambda uris
-const { eventUriLambda, eventInfoLambda, articlesBySourceLambda, articlesByEventLambda } = process.env;
+const { eventUriLambda, eventInfoLambda, articlesBySourceLambda, articlesByEventLambda, secondArticlesBySourceLambda } = process.env;
 
 /* 
    ********************************************************************* 
@@ -482,7 +482,7 @@ const dailyFetch = async() => {
   console.log("TWO DAYS AGO ARTICLES FETCHED!");
   const articles1 = await getArticlesBySource(1);
   console.log("ONE DAY AGO ARTICLES FETCHED!");
-  console.log('fetched!');
+  console.log('fetched!', moment());
   db.sequelize.close();
 };
 
@@ -491,7 +491,7 @@ const dailyFetch = async() => {
 const fetchNewlyRelevant = async(daysAgo) => {
   const newlyRelevant = await relevanceCheck(daysAgo);
   await getEventInfo(newlyRelevant);
-  console.log('newly relevant events fetched');
+  console.log('newly relevant events fetched for', moment());
   db.sequelize.close();
 };
 
