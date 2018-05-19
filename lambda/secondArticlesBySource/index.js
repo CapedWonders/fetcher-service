@@ -23,13 +23,14 @@ const getDate = (daysAgo) => {
 
 //our MVP seven news sources.  Use these URIs to communicate with ER
 const sourcesURI = {
-  fox: 'foxnews.com',
-  breitbart: 'breitbart.com',
-  huffington: 'huffingtonpost.com',
-  msnbc: 'msnbc.com',
-  hill: 'thehill.com',
-  ap: 'hosted.ap.org',
-  times: 'nytimes.com',
+  motherjones: 'motherjones.com',
+  npr: 'npr.org',
+  washingtontimes: 'washingtontimesreporter.com',
+  guardian: 'theguardian.com',
+  latimes: 'latimes.com',
+  federalist: 'thefederalist.com',
+  blaze: 'theblaze.com',
+  wnd: 'wnd.com'
 };
 
 //helper to retrieve all articles published yesterday by news outlet
@@ -53,13 +54,6 @@ const getArticlesBySource = async(sourceUri, daysAgo) => {
 const getAllArticles = async(daysAgo) => {
   let articles = 
   {
-    fox: await getArticlesBySource(sourcesURI.fox, daysAgo),
-    breitbart: await getArticlesBySource(sourcesURI.breitbart, daysAgo),
-    huffington: await getArticlesBySource(sourcesURI.huffington, daysAgo),
-    msnbc: await getArticlesBySource(sourcesURI.msnbc, daysAgo),
-    hill: await getArticlesBySource(sourcesURI.hill, daysAgo),
-    ap: await getArticlesBySource(sourcesURI.ap, daysAgo),
-    times: await getArticlesBySource(sourcesURI.times, daysAgo),
     motherjones: await getArticlesBySource(sourcesURI.motherjones, daysAgo),
     npr: await getArticlesBySource(sourcesURI.motherjones, daysAgo),
     washingtontimes: await getArticlesBySource(sourcesURI.washingtontimes, daysAgo),
@@ -68,7 +62,7 @@ const getAllArticles = async(daysAgo) => {
     federalist: await getArticlesBySource(sourcesURI.federalist, daysAgo),
     blaze: await getArticlesBySource(sourcesURI.blaze, daysAgo),
     wnd: await getArticlesBySource(sourcesURI.wnd, daysAgo)
-    };
+  };
   return articles;
 };
 
