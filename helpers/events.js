@@ -153,9 +153,18 @@ const extractReleventEvents = (urisObj) => {
 
 //check to see if any previously unsaved events are now relevant
 const relevanceCheck = async(daysAgo) => { 
+  //finds all unassociated articles
   const sources = await getUnassociatedArticlesBySource(daysAgo);
+  //discovers which events have now been reported on across the political spectrum
   const relevant = extractReleventEvents(sources);
-  return relevant;
+  const saved = await findSavedEvents(relevant);
+  const unsaved = await findUnsavedEvents(relevant);
+
+  for (const uri of saved) {
+    await associateArticlesNewEvent(uri);
+  }
+
+  return unsaved;
 };
 
 const findUnsavedEvents = async(uris) => {
@@ -169,6 +178,19 @@ const findUnsavedEvents = async(uris) => {
   }
   console.log("unsaved events:", unsaved);
   return unsaved;
+}
+
+const findSavedEvents = async(uris) => {
+  let saved = [];
+  for (const uri of uris) {
+    let event = await db.Event.find({where:{ uri }});
+
+    if (event) {
+      saved.push(uri);
+    }
+  }
+  console.log("saved events:", saved);
+  return saved;
 }
 
 /* 
