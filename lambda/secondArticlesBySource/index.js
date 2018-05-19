@@ -28,7 +28,7 @@ const sourcesURI = {
   washingtontimes: 'washingtontimesreporter.com',
   guardian: 'theguardian.com',
   latimes: 'latimes.com',
-  federalist: 'thefederalist.com',
+  ijr: 'ijr.com',
   blaze: 'theblaze.com',
   wnd: 'wnd.com'
 };
@@ -55,11 +55,11 @@ const getAllArticles = async(daysAgo) => {
   let articles = 
   {
     motherjones: await getArticlesBySource(sourcesURI.motherjones, daysAgo),
-    npr: await getArticlesBySource(sourcesURI.motherjones, daysAgo),
+    npr: await getArticlesBySource(sourcesURI.npr, daysAgo),
     washingtontimes: await getArticlesBySource(sourcesURI.washingtontimes, daysAgo),
     guardian: await getArticlesBySource(sourcesURI.guardian, daysAgo),
     latimes: await getArticlesBySource(sourcesURI.latimes, daysAgo),
-    federalist: await getArticlesBySource(sourcesURI.federalist, daysAgo),
+    ijr: await getArticlesBySource(sourcesURI.ijr, daysAgo),
     blaze: await getArticlesBySource(sourcesURI.blaze, daysAgo),
     wnd: await getArticlesBySource(sourcesURI.wnd, daysAgo)
   };
