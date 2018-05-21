@@ -12,7 +12,7 @@ const _ = require('lodash');
 const moment = require('moment');
 
 //lambda uris
-const { articlesSingleSourceLambda, eventUriLambda, eventInfoLambda, articlesBySourceLambda, articlesByEventLambda, secondArticlesBySourceLambda } = process.env;
+const { articlesSingleSourceLambda, eventInfoLambda } = process.env;
 
 /* 
    ********************************************************************* 
@@ -429,13 +429,6 @@ const associateArticleConceptsOrSubcategories = async (conceptsOrSubcategories, 
    ********************************************************************* 
 */
 
-//get the uris for the events we care about across all news sources for the last 3 days COST: 60 tokens
-const getUris = async() => {
-  const response = await axios.get(eventUriLambda);
-  console.log('uris fetched');
-  return extractReleventEvents(response.data.data);  
-};
-
 //get detailed event info for any events we have not already saved COST: 10 tokens per 50 events
 //after saving, checks whether there are any saved unassociated articles in our DB
 const getEventInfo = async(uris) => {
@@ -453,15 +446,6 @@ const getEventInfo = async(uris) => {
   } else {
     console.log('There are no new events to fetch');
   }  
-};
-
-//get the articles associated with each event COST: 10 tokens per event
-const getArticlesByEvent = async(uris) => {
-  const response = await axios.post(articlesByEventLambda, { uris });
-  for (const article of response.data.data) {
-    await buildSaveArticle(article);  
-  } 
-  console.log('articles saved');
 };
 
 //get the articles published by the sources we care about on a particular day COST: 1 token per news source per 100 articles
