@@ -221,6 +221,30 @@ describe('buildSaveEvent', function() {
 
     done();
   });
+
+  it('should not save the event if event has no english title or summary', async function(done) {
+    expect.assertions(3);
+
+    const badEvent = {
+      title: {eng: 'bad event'},
+      summary: {fra:'fail fail all the live long day'}
+    };
+
+    const badEvent2 = {
+      title: {fra: 'another bad event'},
+      summary: {eng:'fail fail all the live long day'}
+    };
+
+    const event= await buildSaveEvent(badEvent);
+    const event2= await buildSaveEvent(badEvent);
+    expect(event).not.toBeTruthy();
+    expect(event2).not.toBeTruthy();
+
+    const allEvent = await db.Event.findAll({});
+    expect(allEvent.length).toEqual(0);
+
+    done();
+  });
 });
 
 describe('buildSaveSubcategory', function() {
