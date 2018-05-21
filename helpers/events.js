@@ -556,13 +556,13 @@ module.exports = {
   extractFormatSource,
   buildSaveArticle,
   calculateBias,
-  dailyFetch,
+  dailyArticleFetch,
   relevanceCheck,
   findUnsavedEvents,
   associateArticlesNewEvent,
   associateArticleConceptsOrSubcategories,
   getUnassociatedArticlesBySource,
-  fetchNewlyRelevant,
+  dailyEventsFetch,
   calculateBias
 };
 
