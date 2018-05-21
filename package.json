@@ -19,6 +19,7 @@
     "lodash": "^4.17.10",
     "moment": "^2.22.1",
     "mysql2": "^1.5.3",
-    "sequelize": "^4.37.7"
+    "sequelize": "^4.37.7",
+    "watson-developer-cloud": "^3.4.2"
   }
 }
