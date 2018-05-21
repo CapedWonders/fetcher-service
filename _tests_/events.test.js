@@ -69,6 +69,7 @@ describe('formatEvent', function() {
 
     expect(result1).not.toBeTruthy();
     expect(result2).not.toBeTruthy();
+    done();
   });
 });
 
