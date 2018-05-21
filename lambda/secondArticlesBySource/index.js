@@ -47,6 +47,7 @@ const getArticlesBySource = async(sourceUri, daysAgo) => {
   const requestArticlesInfo = new RequestArticlesInfo({page: 1, count: 100, returnInfo: returnInfo});
   q.setRequestedResult(requestArticlesInfo);
   const response = await er.execQuery(q);
+  console.log(response);
   return response.articles.results;
 };
 
