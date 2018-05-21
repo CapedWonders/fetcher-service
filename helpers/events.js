@@ -159,17 +159,15 @@ const relevanceCheck = async(daysAgo) => {
   //finds all unassociated articles
   const sources = await getUnassociatedArticlesBySource(daysAgo);
 
-  //check to see if they now belong to an event
-  for (const source in sources) {
-    for (const uri of sources[source]) {
-      await associateArticlesNewEvent(uri);
-    }
-  }
-
   //discovers which events have now been reported on across the political spectrum
   const relevant = extractReleventEvents(sources);
   const saved = await findSavedEvents(relevant);
   const unsaved = await findUnsavedEvents(relevant);
+
+  //check to see if any saved events have new articles to associate
+  for (const uri of saved) {
+    await associateArticlesNewEvent(uri);
+  }
 
   return unsaved;
 };
