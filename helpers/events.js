@@ -513,12 +513,11 @@ const dailyArticleFetch = async() => {
   console.log("ONE DAY AGO ARTICLES FETCHED!");
   console.log('fetched all articles!', moment());
 
-  //check to see what events we now 
   db.sequelize.close();
 };
 
-//fetch additional event info for any newly relevant events from the last 3 days
-//cost ~20 tokens
+//fetch additional event info for any newly relevant events from the last 5 days
+//cost 5 tokens per event we fetch, ~50 tokens
 const dailyEventsFetch = async(daysAgo) => {
   const newlyRelevant = await relevanceCheck(daysAgo);
   await getEventInfo(newlyRelevant);
