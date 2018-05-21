@@ -360,9 +360,13 @@ const buildSaveEvent = async (event) => {
     console.log(`Event ${event.uri} already exists`);
     return saved;
   } else {
-    const newEvent = await formatted.save();
-    console.log(`New event saved ${newEvent.dataValues.uri}`);
-    return newEvent;
+    if (formatted) {
+      const newEvent = await formatted.save();
+      console.log(`New event saved ${newEvent.dataValues.uri}`);
+     return newEvent;
+    } else {
+      console.log(`This event does not meet our criteria ${event.title}`);
+    }  
   }
 };
 
