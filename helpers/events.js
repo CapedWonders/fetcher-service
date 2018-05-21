@@ -149,7 +149,7 @@ const extractReleventEvents = (urisObj) => {
   let rightAndLeft = new Set([...rightOrFarRight].filter(x => leftOrFarLeft.has(x)));
   let rightAndCenter = new Set([...rightOrFarRight].filter(x => centerAny.has(x)));
   let leftAndCenter = new Set([...leftOrFarLeft].filter(x => centerAny.has(x)));
-  let leftRightAndCenter = new Set([...rightAndLeft].filter(x => centerAny.has(x));
+  let leftRightAndCenter = new Set([...rightAndLeft].filter(x => centerAny.has(x)));
 
   return leftAndRight;
 };
