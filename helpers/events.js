@@ -494,7 +494,7 @@ const getArticlesAllSources = async(daysAgo) => {
   };
 
   for (const source in allSourceUris) {
-    allArticles[source] = await getArticlesBySource(allSources[source], daysAgo);
+    allArticles[source] = await getArticlesBySource(allSourceUris[source], daysAgo);
   }
 
   return allArticles;
