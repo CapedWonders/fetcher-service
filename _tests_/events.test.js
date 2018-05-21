@@ -48,6 +48,28 @@ describe('formatEvent', function() {
     expect(result).not.toHaveProperty('wgt');
     done();
   });
+
+  it('should only format events that have english titles and summaries', function(done) {
+    let sampleEvent1 = {
+      uri: 'eng-laskjf;ldsjkf',
+      eventDate: "2018-05-03",
+      title: {fra: 'lkjlkj'},
+      summary: {fra: 'lkjlkj', eng: "lkjljk"}
+    };
+
+    let sampleEvent2 = {
+      uri: 'eng-laskjf;ldsjkf',
+      eventDate: "2018-05-03",
+      title: {fra: 'lkjlkj', eng: "lkjljk"},
+      summary: {fra: 'lkjlkj'}
+    };
+
+    let result1 = formatEvent(sampleEvent1);
+    let result2 = formatEvent(sampleEvent2);
+
+    expect(result1).not.toBeTruthy();
+    expect(result2).not.toBeTruthy();
+  });
 });
 
 describe('formatConcept', function() {

@@ -142,27 +142,34 @@ const extractReleventEvents = (urisObj) => {
   let farLeftAny = new Set([...huffington, ...msnbc, ...motherjones]);
 
 
-  //at least one of left, right and center have reported
-  let rightAndFarRight = new Set([...rightAny, ...farRightAny]);
-  let leftAndFarLeft = new Set([...leftAny, ...farLeftAny]);
-  let spectrumSet = new Set([...rightAndFarRight].filter(x => leftAndFarLeft.has(x) && centerAny.has(x)));
-  let spectrumArray = [...spectrumSet];
-  
-  return spectrumArray;
+  //determine which events we care to know more about
+  let rightOrFarRight = new Set([...rightAny, ...farRightAny]);
+  let leftOrFarLeft = new Set([...leftAny, ...farLeftAny]);
+
+  let rightAndLeft = new Set([...rightOrFarRight].filter(x => leftOrFarLeft.has(x)));
+  let rightAndCenter = new Set([...rightOrFarRight].filter(x => centerAny.has(x)));
+  let leftAndCenter = new Set([...leftOrFarLeft].filter(x => centerAny.has(x)));
+  let leftRightAndCenter = new Set([...rightAndLeft].filter(x => centerAny.has(x));
+
+  return leftAndRight;
 };
 
 //check to see if any previously unsaved events are now relevant
 const relevanceCheck = async(daysAgo) => { 
   //finds all unassociated articles
   const sources = await getUnassociatedArticlesBySource(daysAgo);
+
+  //check to see if they now belong to an event
+  for (const source in sources) {
+    for (const uri of sources[source]) {
+      await associateArticlesNewEvent(uri);
+    }
+  }
+
   //discovers which events have now been reported on across the political spectrum
   const relevant = extractReleventEvents(sources);
   const saved = await findSavedEvents(relevant);
   const unsaved = await findUnsavedEvents(relevant);
-
-  for (const uri of saved) {
-    await associateArticlesNewEvent(uri);
-  }
 
   return unsaved;
 };
@@ -202,12 +209,12 @@ const findSavedEvents = async(uris) => {
 
 //format instances to conform to DB models
 const formatEvent = (event) => {
-  if (event && event.uri) {
+  if (event && event.uri && event.title.eng && event.summary.eng) {
     return db.Event.build({
       uri: event.uri,
       date: moment(event.eventDate, "YYYY-MM-DD"),
-      title: event.title.eng || event.title || "",
-      summary: event.summary.eng || event.summary || ""
+      title: event.title.eng || "",
+      summary: event.summary.eng || ""
     });
   } else {
     return null
