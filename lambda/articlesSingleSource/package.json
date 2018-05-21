@@ -1,0 +1,14 @@
+{
+  "name": "articlessinglesource",
+  "version": "1.0.0",
+  "description": "fetches all articles published by a single news source on one day",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "eventregistry": "^1.2.2"
+  }
+}

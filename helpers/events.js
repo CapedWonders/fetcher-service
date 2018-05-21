@@ -12,7 +12,7 @@ const _ = require('lodash');
 const moment = require('moment');
 
 //lambda uris
-const { eventUriLambda, eventInfoLambda, articlesBySourceLambda, articlesByEventLambda, secondArticlesBySourceLambda } = process.env;
+const { articlesSingleSourceLambda, eventInfoLambda } = process.env;
 
 /* 
    ********************************************************************* 
@@ -429,13 +429,6 @@ const associateArticleConceptsOrSubcategories = async (conceptsOrSubcategories, 
    ********************************************************************* 
 */
 
-//get the uris for the events we care about across all news sources for the last 3 days COST: 60 tokens
-const getUris = async() => {
-  const response = await axios.get(eventUriLambda);
-  console.log('uris fetched');
-  return extractReleventEvents(response.data.data);  
-};
-
 //get detailed event info for any events we have not already saved COST: 10 tokens per 50 events
 //after saving, checks whether there are any saved unassociated articles in our DB
 const getEventInfo = async(uris) => {
@@ -455,62 +448,77 @@ const getEventInfo = async(uris) => {
   }  
 };
 
-//get the articles associated with each event COST: 10 tokens per event
-const getArticlesByEvent = async(uris) => {
-  const response = await axios.post(articlesByEventLambda, { uris });
-  for (const article of response.data.data) {
-    await buildSaveArticle(article);  
-  } 
-  console.log('articles saved');
-};
+//get the articles published by the sources we care about on a particular day COST: 1 token per news source per 100 articles
+//usually between 1 and 3 tokens
+const getArticlesBySource = async(sourceUri, daysAgo) => {
+  const response = await axios.post(articlesSingleSourceLambda, { sourceUri, daysAgo });
+  const articles = response.data.articles;
+  const uris = response.data.uris;
 
-//get the articles published by the sources we care about on a particular day COST: 1 token per news source (15 tokens per call)
-const getArticlesBySource = async(daysAgo) => {
-  const response = await axios.post(articlesBySourceLambda, { daysAgo });
-  const response2 = await axios.post(secondArticlesBySourceLambda, { daysAgo });
-  const articles = Object.assign(response.data.articles, response2.data.articles);
-  const uris = Object.assign(response.data.uris, response2.data.uris);
-
-  for (const source in articles) {
-    for (const article of articles[source]) {
-      //ignore if it has not yet been associated by Event Registry to an event
-      if (article.eventUri) {
-        const saved = await buildSaveArticle(article);
-        //only associate concepts and categories if we have not done so before
-        if (saved.new) {
-          await associateArticleConceptsOrSubcategories(article.concepts, 'concept', article.uri);
-          await associateArticleConceptsOrSubcategories(article.categories, 'subcategory', article.uri);
-        }    
-      }      
-    }
+  for (const article of articles) {
+    //ignore if it has not yet been associated by Event Registry to an event
+    if (article.eventUri) {
+      const saved = await buildSaveArticle(article);
+      //only associate concepts and categories if we have not done so before
+      if (saved.new) {
+        await associateArticleConceptsOrSubcategories(article.concepts, 'concept', article.uri);
+        await associateArticleConceptsOrSubcategories(article.categories, 'subcategory', article.uri);
+      }    
+    }      
   }
+  
   console.log('articles saved');
   return { articles, uris }
 };
 
-//once every 24 hours, hit all three lambda functions to get our data into the DB
-//costs ~125 tokens
-const dailyFetch = async() => {
-  //get the event uris for events that the left right and center have reported on in the last three days
-  const uris = await getUris();
+//get, format, save, associate the articles that were published by all our sources for any given day
+//COST: between 15 and 45 tokens depending on how many articles there are
+const getArticlesAllSources = async(daysAgo) => {
+  const allArticles = {};
+  const allSourceUris = {
+    fox: 'foxnews.com',
+    breitbart: 'breitbart.com',
+    hill: 'thehill.com',
+    ap: 'hosted.ap.org',
+    times: 'nytimes.com',
+    msnbc: 'msnbc.com',
+    huffington: 'huffingtonpost.com',    
+    motherjones: 'motherjones.com',
+    npr: 'npr.org',
+    washingtontimes: 'washingtontimesreporter.com',
+    guardian: 'theguardian.com',
+    latimes: 'latimes.com',
+    ijr: 'ijr.com',
+    blaze: 'theblaze.com',
+    wnd: 'wnd.com'
+  };
 
-  //get detailed event info for the events that are relevant to us and have not yet been saved
-  const eventInfo = await getEventInfo(uris);
+  for (const source in allSourceUris) {
+    allArticles[source] = await getArticlesBySource(allSources[source], daysAgo);
+  }
 
-  //get, format, save, associate the articles that were published by all our sources for the last 3 days COST: 21 tokens
-  const articles3 = await getArticlesBySource(3);
+  return allArticles;
+};
+
+//get, format, save, associate the articles that were published by all our sources for the last 3 days
+//COST: between 45 and 135 tokens
+const dailyArticleFetch = async() => { 
+  const threeDaysAgo = await getArticlesAllSources(3);
   console.log("THREE DAYS AGO ARTICLES FETCHED!");
-  const articles2 = await getArticlesBySource(2);
+
+  const twoDaysAgo = await getArticlesBySource(2);
   console.log("TWO DAYS AGO ARTICLES FETCHED!");
-  const articles1 = await getArticlesBySource(1);
+
+  const yesterday = await getArticlesBySource(1);
   console.log("ONE DAY AGO ARTICLES FETCHED!");
-  console.log('fetched!', moment());
+  console.log('fetched all articles!', moment());
+
   db.sequelize.close();
 };
 
-//fetch additional event info for any newly relevant events from the last 3 days
-//cost ~20 tokens
-const fetchNewlyRelevant = async(daysAgo) => {
+//fetch additional event info for any newly relevant events from the last 5 days
+//cost 5 tokens per event we fetch, ~50 tokens
+const dailyEventsFetch = async(daysAgo) => {
   const newlyRelevant = await relevanceCheck(daysAgo);
   await getEventInfo(newlyRelevant);
   console.log('newly relevant events fetched for', moment());
@@ -530,13 +538,13 @@ module.exports = {
   extractFormatSource,
   buildSaveArticle,
   calculateBias,
-  dailyFetch,
+  dailyArticleFetch,
   relevanceCheck,
   findUnsavedEvents,
   associateArticlesNewEvent,
   associateArticleConceptsOrSubcategories,
   getUnassociatedArticlesBySource,
-  fetchNewlyRelevant,
+  dailyEventsFetch,
   calculateBias
 };
 
