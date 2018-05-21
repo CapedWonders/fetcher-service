@@ -151,7 +151,7 @@ const extractReleventEvents = (urisObj) => {
   let leftAndCenter = new Set([...leftOrFarLeft].filter(x => centerAny.has(x)));
   let leftRightAndCenter = new Set([...rightAndLeft].filter(x => centerAny.has(x)));
 
-  return leftAndRight;
+  return rightAndLeft;
 };
 
 //check to see if any previously unsaved events are now relevant
