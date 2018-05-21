@@ -455,19 +455,18 @@ const getArticlesBySource = async(sourceUri, daysAgo) => {
   const articles = response.data.articles;
   const uris = response.data.uris;
 
-  for (const source in articles) {
-    for (const article of articles[source]) {
-      //ignore if it has not yet been associated by Event Registry to an event
-      if (article.eventUri) {
-        const saved = await buildSaveArticle(article);
-        //only associate concepts and categories if we have not done so before
-        if (saved.new) {
-          await associateArticleConceptsOrSubcategories(article.concepts, 'concept', article.uri);
-          await associateArticleConceptsOrSubcategories(article.categories, 'subcategory', article.uri);
-        }    
-      }      
-    }
+  for (const article of articles) {
+    //ignore if it has not yet been associated by Event Registry to an event
+    if (article.eventUri) {
+      const saved = await buildSaveArticle(article);
+      //only associate concepts and categories if we have not done so before
+      if (saved.new) {
+        await associateArticleConceptsOrSubcategories(article.concepts, 'concept', article.uri);
+        await associateArticleConceptsOrSubcategories(article.categories, 'subcategory', article.uri);
+      }    
+    }      
   }
+  
   console.log('articles saved');
   return { articles, uris }
 };
