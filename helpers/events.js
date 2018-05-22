@@ -515,10 +515,10 @@ const dailyArticleFetch = async() => {
   const threeDaysAgo = await getArticlesAllSources(3);
   console.log("THREE DAYS AGO ARTICLES FETCHED!");
 
-  const twoDaysAgo = await getArticlesBySource(2);
+  const threeDaysAgo = await getArticlesAllSources(2);
   console.log("TWO DAYS AGO ARTICLES FETCHED!");
 
-  const yesterday = await getArticlesBySource(1);
+  const threeDaysAgo = await getArticlesAllSources(1);
   console.log("ONE DAY AGO ARTICLES FETCHED!");
   console.log('fetched all articles!', moment());
 
