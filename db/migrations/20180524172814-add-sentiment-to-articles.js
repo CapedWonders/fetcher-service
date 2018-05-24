@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.addColumn('Articles', 'sentiment', {type: Sequelize.integer});
+    return queryInterface.addColumn('Articles', 'sentiment', {type: Sequelize.FLOAT});
   },
 
   down: (queryInterface, Sequelize) => {

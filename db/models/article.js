@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     date: DataTypes.DATE,
     image: DataTypes.STRING,
     eventUri: DataTypes.STRING,
+    sentiment: DataTypes.FLOAT
   }, {});
   Article.associate = function(models) {
     Article.belongsTo(models.Event);

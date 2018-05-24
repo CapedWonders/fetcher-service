@@ -8,7 +8,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     title: DataTypes.STRING,
     summary: DataTypes.STRING,
-    date: DataTypes.DATE
+    date: DataTypes.DATE,
+    sentiment: DataTypes.FLOAT,
+    anger: DataTypes.FLOAT,
+    joy: DataTypes.FLOAT,
+    fear: DataTypes.FLOAT,
+    disgust: DataTypes.FLOAT,
+    sadness: DataTypes.FLOAT
   }, {});
   Event.associate = function(models) {
     Event.hasMany(models.Article);
