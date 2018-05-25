@@ -121,6 +121,7 @@ const getSourcesByBias = async(eventId, bias) => {
   return sources;
 };
 
+module.exports = { analyzeArticle, analyzeEvent };
 
 
 
