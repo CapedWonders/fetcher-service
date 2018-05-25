@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('sentiments', {
+    return queryInterface.createTable('Sentiments', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -25,6 +25,26 @@ module.exports = {
       },
       disgust: {
         type: Sequelize.FLOAT
+      },
+      eventId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Events',
+          key: 'id'
+        },
+      },
+      articleId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Articles',
+          key: 'id'
+        },
+      },
+      title: {
+        type: Sequelize.BOOLEAN
+      },
+      body: {
+        type:Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,
