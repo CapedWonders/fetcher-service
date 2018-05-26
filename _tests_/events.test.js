@@ -15,7 +15,7 @@ if (process.env.db_name === "eco_chamber") {
 
 afterAll(() => db.sequelize.close());
 
-xdescribe('formatEvent', function() {
+describe('formatEvent', function() {
   it('should return an instance of sequelize event model', function(done) {
     let result = formatEvent(lambda2[0]);
    
@@ -75,7 +75,7 @@ xdescribe('formatEvent', function() {
   });
 });
 
-xdescribe('formatConcept', function() {
+describe('formatConcept', function() {
   it('should return an instance of sequelize concept model', function(done) {
     let result = formatConcept(lambda2[0].concepts[0]);
 
@@ -803,7 +803,7 @@ describe('buildASaveArticle', function() {
   }); 
 });
 
-describe('getUnassociatedArticlesBySource', function() {
+xdescribe('getUnassociatedArticlesBySource', function() {
   beforeEach(() => {
     return db.clearDB().then(async() => {
       for (const article of lambda4.articles.fox) {
@@ -812,17 +812,17 @@ describe('getUnassociatedArticlesBySource', function() {
     });
   });
 
-  it('shoud retrieve events that are unassociated')
+  it('shou;d retrieve events that are unassociated')
 });
 
-describe('calculateBias', function() {
-
-});
-
-describe('isEventRelevant', function() {
+xdescribe('calculateBias', function() {
 
 });
 
-describe('associateArticlesNewEvent', function() {
+xdescribe('isEventRelevant', function() {
+
+});
+
+xdescribe('associateArticlesNewEvent', function() {
 
 });
