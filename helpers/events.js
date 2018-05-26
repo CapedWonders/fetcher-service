@@ -528,7 +528,7 @@ const getArticlesBySource = async(sourceUri, daysAgo) => {
         if (event) {
           await addArticleAnalysis(article.uri);
           await event.addArticle(saved.article);
-          console.log(`Article ${saved.dataValues.uri} added to event ${event.dataValues.id}`);         
+          console.log(`Article ${saved.article.dataValues.uri} added to event ${event.dataValues.id}`);         
         }       
       }          
     }      
