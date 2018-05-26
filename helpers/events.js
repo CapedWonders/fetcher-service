@@ -345,7 +345,7 @@ const buildSaveArticle = async (article) => {
     await source.addArticle(alreadySaved);
 
     //if it isn't already associated with a saved event, make it so
-    if (event && article.eventId === null) {
+    if (event && alreadySaved.dataValues.eventId === null) {
       await event.addArticle(alreadySaved);
       console.log(`Article added to event ${event.dataValues.uri}`);
     }
@@ -353,7 +353,7 @@ const buildSaveArticle = async (article) => {
   }
 
   //if we have the associated event in the DB, make sure it's added to the correct event
-  if (event && article.eventId === null) {
+  if (event && alreadySaved.dataValues.eventId === null) {
     await event.addArticle(alreadySaved);
     console.log(`Article added to event ${event.dataValues.uri}`);
   }
@@ -371,7 +371,11 @@ const associateArticlesNewEvent = async (eventUri) => {
    
     for (const article of articles) {
       await event.addArticle(article);
-      console.log(`added article ${article.id} to event ${eventUri}`);
+      const sentiments = await article.getSentiments();
+      if (sentiments.length === 0) {
+        await addArticleAnalysis(article.uri);
+      }
+      console.log(`added article ${article.id} to event ${eventUri}`);     
     }
     console.log(`articles saved for event ${eventUri}`)
   } else {
@@ -387,12 +391,12 @@ const addArticleAnalysis = async(articleUri) => {
 
   if (title) {
     article.addSentiment(title);
-    console.log(`added title sentiment to article ${articleUri}}`);
+    console.log(`added title sentiment to article ${articleUri}`);
   }
 
   if (body) {
     article.addSentiment(body);
-    console.log(`added body sentiment to article ${articleUri}}`);
+    console.log(`added body sentiment to article ${articleUri}`);
   } 
 };
 
@@ -516,12 +520,17 @@ const getArticlesBySource = async(sourceUri, daysAgo) => {
     //ignore if it has not yet been associated by Event Registry to an event
     if (article.eventUri) {
       const saved = await buildSaveArticle(article);
+      const event = await db.Event.find({where: {uri: article.eventUri}});
       //only associate concepts and categories if we have not done so before
-      if (saved.new) {
+      if (saved.new) {       
         await associateArticleConceptsOrSubcategories(article.concepts, 'concept', article.uri);
         await associateArticleConceptsOrSubcategories(article.categories, 'subcategory', article.uri);
-        await addArticleAnalysis(article.uri);
-      }    
+        if (event) {
+          await addArticleAnalysis(article.uri);
+          await event.addArticle(saved.article);
+          console.log(`Article ${saved.dataValues.uri} added to event ${event.dataValues.id}`);         
+        }       
+      }          
     }      
   }
   
