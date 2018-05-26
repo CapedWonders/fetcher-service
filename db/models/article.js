@@ -11,13 +11,14 @@ module.exports = (sequelize, DataTypes) => {
     body: DataTypes.TEXT,
     date: DataTypes.DATE,
     image: DataTypes.STRING,
-    eventUri: DataTypes.STRING,
+    eventUri: DataTypes.STRING
   }, {});
   Article.associate = function(models) {
     Article.belongsTo(models.Event);
     Article.belongsTo(models.Source);
     Article.belongsToMany(models.Subcategory, {through: 'ArticleSubcategory'});
     Article.belongsToMany(models.Concept, {through: 'ArticleConcept'});
+    Article.belongsToMany(models.Sentiment, {through: 'ArticleSentimment'});
   };
   return Article;
 };

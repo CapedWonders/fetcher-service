@@ -1,6 +1,6 @@
 exports.handler = async (event) => {
   //get the first page (100 articles)
-  const initialResponse = await getArticlesBySource(event.sourceUri, event.daysAgo, 1);
+  const initialResponse = await getArticlesByComplexQuery(event.sourceUri, event.daysAgo, 1);
   const responses = {
     "1": initialResponse
   }
@@ -10,7 +10,7 @@ exports.handler = async (event) => {
   //if there are more than 100 articles, keep fetching until we have them all
   while(currentPage < totalPages) {
     currentPage++;
-    responses[currentPage.toString()] = await getArticlesBySource(event.sourceUri, event.daysAgo, currentPage);
+    responses[currentPage.toString()] = await getArticlesByComplexQuery(event.sourceUri, event.daysAgo, currentPage);
   }  
   console.log("RESPONSES OBJ:", responses);
   const result = extractArticlesEventUris(responses);
@@ -18,7 +18,7 @@ exports.handler = async (event) => {
 };
 
 //event registry API
-const { EventRegistry, QueryArticles, ArticleInfoFlags, ReturnInfo, SourceInfoFlags, RequestArticlesInfo } = require('eventregistry');
+const { ComplexArticleQuery, BaseQuery, EventRegistry, QueryArticles, ArticleInfoFlags, ReturnInfo, SourceInfoFlags, RequestArticlesInfo } = require('eventregistry');
 const er = new EventRegistry({apiKey: process.env.EVENT_REGISTRY_API_KEY});
 
 //moment
@@ -34,13 +34,13 @@ const getDate = (daysAgo) => {
 //helper to retrieve all articles published yesterday by news outlet and page number of results
 const getArticlesBySource = async(sourceUri, daysAgo, page) => { 
   const q = new QueryArticles({
-    lang: ["eng"],
+    lang: "eng",
     dateStart: getDate(daysAgo),
     dateEnd: getDate(daysAgo),
     sourceUri: sourceUri
   });
   const sourceInfo = new SourceInfoFlags({image:true});
-  const articleInfo = new ArticleInfoFlags({image: true, concepts: true, categories: true});
+  const articleInfo = new ArticleInfoFlags({image: true, concepts: true, categories: true, bodyLen: -1});
   const returnInfo = new ReturnInfo({articleInfo: articleInfo, sourceInfo: sourceInfo});
   const requestArticlesInfo = new RequestArticlesInfo({page: page, count: 100, returnInfo: returnInfo});
   q.setRequestedResult(requestArticlesInfo);
@@ -58,6 +58,32 @@ const extractArticlesEventUris = (articlesObj) => {
     eventUris = eventUris.concat(currentArticles.map(article => article.eventUri).filter(uri => uri));
   }
   return { articles: articles, uris: eventUris };
+}
+
+const getArticlesByComplexQuery = async(sourceUri, daysAgo, page) => { 
+  const baseQuery = new BaseQuery({
+    lang: "eng",
+    dateStart: getDate(daysAgo),
+    dateEnd: getDate(daysAgo),
+    sourceUri: sourceUri
+  });
+
+  const options = {
+    isDuplicateFilter: "skipDuplicates",
+    eventFilter: "skipArticlesWithoutEvent" 
+  };
+
+  const cq = new ComplexArticleQuery(baseQuery, options); 
+  const q = QueryArticles.initWithComplexQuery(cq);
+
+  const sourceInfo = new SourceInfoFlags({image:true});
+  const articleInfo = new ArticleInfoFlags({image: true, concepts: true, categories: true, bodyLen: -1});
+  const returnInfo = new ReturnInfo({articleInfo: articleInfo, sourceInfo: sourceInfo});
+  const requestArticlesInfo = new RequestArticlesInfo({page: page, count: 100, returnInfo: returnInfo});
+  q.setRequestedResult(requestArticlesInfo);
+  const response = await er.execQuery(q);
+  console.log(response);
+  return response;
 }
 
 
