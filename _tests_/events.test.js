@@ -1,19 +1,21 @@
 //fake data lambda1=eventUris, lambda2=events, lambda3=articles by event, lambda4=articles by source
-const { lambda1, lambda2, lambda3, lambda4, articleWithConcepts, sampleEvent, lambda1All } = require('./sampleData.js');
+const { sampleArticleAnalysis, lambda1, lambda2, lambda3, 
+        lambda4, articleWithConcepts, sampleEvent, lambda1All } = require('./sampleData.js');
 
 //db models
 const db = require('../db/models/index.js');
 
 const { associateEventConceptsOrSubcategories, buildSaveConcept, buildSaveSubcategory, buildSaveEvent, formatSubcategory,
   formatConcept, formatEvent, formatArticle, extractReleventEvents, buildSaveArticle, extractFormatSource, associateArticlesNewEvent,
-  associateArticleConceptsOrSubcategories, getUnassociatedArticlesBySource, calculateBias } = require('../helpers/events.js');
+  associateArticleConceptsOrSubcategories, getUnassociatedArticlesBySource, calculateBias,  formatSentiment,
+  buildSaveSentiment, addArticleAnalysis } = require('../helpers/events.js');
 if (process.env.db_name === "eco_chamber") {
   throw error
 }
 
 afterAll(() => db.sequelize.close());
 
-describe('formatEvent', function() {
+xdescribe('formatEvent', function() {
   it('should return an instance of sequelize event model', function(done) {
     let result = formatEvent(lambda2[0]);
    
@@ -73,7 +75,7 @@ describe('formatEvent', function() {
   });
 });
 
-describe('formatConcept', function() {
+xdescribe('formatConcept', function() {
   it('should return an instance of sequelize concept model', function(done) {
     let result = formatConcept(lambda2[0].concepts[0]);
 
@@ -99,7 +101,7 @@ describe('formatSubcategory', function() {
     return db.clearDB();
   });
 
-  it('should return an instance of sequelize subcategory model', function(done) {
+  it.only('should return an instance of sequelize subcategory model', function(done) {
     let result = formatSubcategory(lambda2[0].categories[0]);
 
     expect(result).toBeInstanceOf(db.Subcategory);
@@ -125,6 +127,112 @@ describe('formatSubcategory', function() {
   
     expect(category.dataValues.name).not.toContain('dmoz');
     expect(base).toEqual(category.dataValues.name);
+    done();
+  });
+});
+
+describe('formatSentiment', function() {
+  it('should return an instance of sequelize sentiment model', function(done) {
+    let title = sampleArticleAnalysis.titleAnalysis;
+    let result = formatSentiment(title);
+
+    expect(result).toBeInstanceOf(db.Sentiment);
+    expect(result._options.isNewRecord).toBe(true);
+    expect(result.dataValues).toBeTruthy();
+    done();
+  });
+
+  it('should know whether it is a title or a body', function(done) {
+    let title = sampleArticleAnalysis.titleAnalysis;
+    let body = sampleArticleAnalysis.bodyAnalysis;
+    let result1 = formatSentiment(title, 'title');
+    let result2 = formatSentiment(body, 'body');
+
+    expect(result1.dataValues).toHaveProperty('title');
+    expect(result1.dataValues.title).toBeTruthy();
+    expect(result1.dataValues.body).not.toBeTruthy();
+
+    expect(result2.dataValues).toHaveProperty('body');
+    expect(result2.dataValues.body).toBeTruthy();
+    expect(result2.dataValues.title).not.toBeTruthy();
+  
+    done();
+  });
+
+  it('should have a sentiment score and label', function(done) {
+    let title = sampleArticleAnalysis.titleAnalysis;
+    let body = sampleArticleAnalysis.bodyAnalysis;
+    let result = formatSentiment(title, 'title');
+    let result2 = formatSentiment(body, 'body');
+
+    expect(result.dataValues).toHaveProperty('sentiment');
+    expect(result2.dataValues).toHaveProperty('sentiment');
+    expect(result.dataValues.sentiment).toBeTruthy();
+    expect(result2.dataValues.sentiment).toBeTruthy();
+    expect(result.dataValues).toHaveProperty('label');
+    expect(result2.dataValues).toHaveProperty('label');
+    expect(typeof result.dataValues.label).toBe('string');
+    expect(typeof result2.dataValues.label).toBe('string');
+    expect(result.dataValues.label).toBe('negative');
+    expect(result2.dataValues.label).toBe('negative');
+   
+    done();
+  });
+
+  it('should have emotion properties', function(done) {
+    let title = sampleArticleAnalysis.titleAnalysis;
+    let body = sampleArticleAnalysis.bodyAnalysis;
+    let result = formatSentiment(title, 'title');
+    let result2 = formatSentiment(body, 'body');
+
+    expect(result.dataValues).toHaveProperty('joy');
+    expect(result.dataValues).toHaveProperty('fear');
+    expect(result.dataValues).toHaveProperty('anger');
+    expect(result.dataValues).toHaveProperty('disgust');
+    expect(result.dataValues).toHaveProperty('sadness');
+    expect(result2.dataValues).toHaveProperty('joy');
+    expect(result2.dataValues).toHaveProperty('fear');
+    expect(result2.dataValues).toHaveProperty('anger');
+    expect(result2.dataValues).toHaveProperty('disgust');
+    expect(result2.dataValues).toHaveProperty('sadness');
+    
+    expect(result.dataValues.joy).toBeTruthy();
+    expect(result2.dataValues.joy).toBeTruthy();
+   
+    done();
+  });
+});
+
+describe('buildSaveSentiment', function() {
+  beforeEach(() => {
+    return db.clearDB();
+  });
+
+  it('should save a formatted Sentiment if it does not exist in DB', async function(done) {
+    expect.assertions(3);
+
+    const test = sampleArticleAnalysis.titleAnalysis;
+    const before = await db.Sentiment.findAll({where: {}});
+    expect(before.length).toEqual(0);
+
+    await buildSaveSentiment(test);
+
+    const after = await db.Sentiment.find({});
+    expect(after).toBeTruthy();
+    expect(after.dataValues.sentiment).toEqual(test.sentiment.document.score);
+    done();
+  });
+
+  it('should not yet associate to events or articles', async function(done) {
+    expect.assertions(1);
+
+    const test = sampleArticleAnalysis.titleAnalysis;
+    const saved = await buildSaveSentiment(test, 'title');
+  
+    const testArticle = articleWithConcepts;
+    const savedArticle = await buildSaveArticle(testArticle);   
+    const sentiments = await savedArticle.article.getSentiments();
+    expect(sentiments.length).toBe(0);
     done();
   });
 });
@@ -163,6 +271,8 @@ describe('buildSaveConcept', function() {
     done();
   });
 });
+
+
 
 describe('buildSaveEvent', function() {
   beforeEach(() => {
@@ -693,7 +803,7 @@ describe('buildASaveArticle', function() {
   }); 
 });
 
-xdescribe('getUnassociatedArticlesBySource', function() {
+describe('getUnassociatedArticlesBySource', function() {
   beforeEach(() => {
     return db.clearDB().then(async() => {
       for (const article of lambda4.articles.fox) {
@@ -705,14 +815,14 @@ xdescribe('getUnassociatedArticlesBySource', function() {
   it('shoud retrieve events that are unassociated')
 });
 
-xdescribe('calculateBias', function() {
+describe('calculateBias', function() {
 
 });
 
-xdescribe('isEventRelevant', function() {
+describe('isEventRelevant', function() {
 
 });
 
-xdescribe('associateArticlesNewEvent', function() {
+describe('associateArticlesNewEvent', function() {
 
 });

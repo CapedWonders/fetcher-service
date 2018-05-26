@@ -11,6 +11,9 @@ module.exports = {
       sentiment: {
         type: Sequelize.FLOAT
       },
+      label: {
+        type: Sequelize.STRING
+      },
       fear: {
         type: Sequelize.FLOAT
       },
@@ -25,20 +28,6 @@ module.exports = {
       },
       disgust: {
         type: Sequelize.FLOAT
-      },
-      eventId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'Events',
-          key: 'id'
-        },
-      },
-      articleId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'Articles',
-          key: 'id'
-        },
       },
       title: {
         type: Sequelize.BOOLEAN

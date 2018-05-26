@@ -14,6 +14,9 @@ const moment = require('moment');
 //lambda uris
 const { articlesSingleSourceLambda, eventInfoLambda } = process.env;
 
+//watson
+const { analyzeArticle, analyzeEvent } = require('./analyzeText.js');
+
 /* 
    ********************************************************************* 
    PROCESSING EVENTS - functions that determine which data we care about 
@@ -255,6 +258,20 @@ const extractFormatSource = (article) => {
   });
 };
 
+const formatSentiment = (sentiment, titleOrBody) => {
+  return db.Sentiment.build({
+    sentiment: sentiment.sentiment.document.score,
+    label: sentiment.sentiment.document.label,
+    fear: sentiment.emotion.document.emotion.fear,
+    sadness: sentiment.emotion.document.emotion.sadness,
+    joy: sentiment.emotion.document.emotion.joy,
+    anger: sentiment.emotion.document.emotion.anger,
+    disgust: sentiment.emotion.document.emotion.disgust,
+    title: titleOrBody === 'title' ? true : false,
+    body: titleOrBody === 'body' ? true: false
+  });
+};
+
 // a value between -2 and +2 for easy ranking 
 const calculateBias = (sourceUri) => {
   console.log(sourceUri)
@@ -285,6 +302,12 @@ const updateBiasRating = async(sourceUri, biasRating) => {
   });
    
   console.log(`Bias added to source ${sourceUri}`);   
+};
+
+const buildSaveSentiment = async(sentimentObj, titleOrBody) => {
+  const sentiment = formatSentiment(sentimentObj, titleOrBody);
+  const saved = await sentiment.save();
+  return saved;
 };
 
 //saving and associating new articles, events, sources, concepts and categories
@@ -346,6 +369,18 @@ const associateArticlesNewEvent = async (eventUri) => {
   } else {
     console.log('this event is not in our system');
   }
+};
+
+const addArticleAnalysis = async(articleUri) => {
+  const article = await db.Article.find({where: {uri: articleUri}});
+  const analysis = await analyzeArticle(article);
+  const title = await buildSaveSentiment(analysis.titleAnalysis, 'title');
+  const body = await buildSaveSentiment(analysis.bodyAnalysis, 'body');
+
+  article.addSentiment(title);
+  console.log(`added title sentiment to article ${articleUri}}`);
+  article.addSentiment(body);
+  console.log(`added body sentiment to article ${articleUri}}`);
 };
 
 const buildSaveEvent = async (event) => {
@@ -472,6 +507,7 @@ const getArticlesBySource = async(sourceUri, daysAgo) => {
       if (saved.new) {
         await associateArticleConceptsOrSubcategories(article.concepts, 'concept', article.uri);
         await associateArticleConceptsOrSubcategories(article.categories, 'subcategory', article.uri);
+        await addArticleAnalysis(article.uri);
       }    
     }      
   }
@@ -554,7 +590,10 @@ module.exports = {
   associateArticleConceptsOrSubcategories,
   getUnassociatedArticlesBySource,
   dailyEventsFetch,
-  calculateBias
+  calculateBias,
+  formatSentiment,
+  buildSaveSentiment,
+  addArticleAnalysis
 };
 
 

@@ -1,6 +1,6 @@
 exports.handler = async (event) => {
   //get the first page (100 articles)
-  const initialResponse = await getArticlesBySource(event.sourceUri, event.daysAgo, 1);
+  const initialResponse = await getArticlesByComplexQuery(event.sourceUri, event.daysAgo, 1);
   const responses = {
     "1": initialResponse
   }
@@ -10,7 +10,7 @@ exports.handler = async (event) => {
   //if there are more than 100 articles, keep fetching until we have them all
   while(currentPage < totalPages) {
     currentPage++;
-    responses[currentPage.toString()] = await getArticlesBySource(event.sourceUri, event.daysAgo, currentPage);
+    responses[currentPage.toString()] = await getArticlesByComplexQuery(event.sourceUri, event.daysAgo, currentPage);
   }  
   console.log("RESPONSES OBJ:", responses);
   const result = extractArticlesEventUris(responses);

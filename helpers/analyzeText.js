@@ -15,29 +15,34 @@ const { lambda4 } = require('../_tests_/sampleData.js');
 const sampleArticle = lambda4.articles.fox[1];
 
 //get emotion data for an article's title or body
-const analyzeArticle = async(article) => {
-  const titleAnalysis = await analyzeText(article.title);
-  const bodyAnalysis = await analyzeText(article.body);
+const analyzeArticle = async(articleUri) => {
+  const article = await db.Article.find({where: {uri: articleUri}});
+  const titleAnalysis = await analyzeText(article.dataValues.title);
+  const bodyAnalysis = await analyzeText(article.dataValues.body);
 
   return { titleAnalysis, bodyAnalysis }
 };
 
 const analyzeText = (text) => {
+  let response;
   var parameters = {
     'text': text,
     'features': {
-      'emotion': {}
+      'emotion': {},
+      'sentiment': {}
     }
   };
 
-  nlu.analyze(parameters, function(err, response) {
-    if (err)
-      console.log('error:', err);
-    else
-      console.log(response);
-      return(response);
+  return new Promise((resolve, reject) => {
+    nlu.analyze(parameters, function(err, res) {
+      if (err)
+        reject(err);
+      else {
+        resolve(res);
+      }     
+    }); 
   });
-}
+};
 
 const eventBySource = async(eventId) => {
   const event = await db.Event.find({where:{id: eventId}});
@@ -71,19 +76,20 @@ const eventBySource = async(eventId) => {
 };
 
 const analyzeEvent = async(eventUri) => {
+  const event = await db.Event.find({where: {uri: eventUri}});
   const eventInfo = await eventBySource(eventUri);
   const eventAnalysis = {
     left: {
-      titles: await analyzeText(eventInfo.left.titles);
-      bodies: await analyzeText(eventInfo.left.bodies);
+      titles: await analyzeText(eventInfo.left.titles),
+      bodies: await analyzeText(eventInfo.left.bodies)
     },
     center: {
-      titles: await analyzeText(eventInfo.center.titles);
-      bodies: await analyzeText(eventInfo.center.bodies);
+      titles: await analyzeText(eventInfo.center.titles),
+      bodies: await analyzeText(eventInfo.center.bodies)
     },
     right: {
-      titles: await analyzeText(eventInfo.right.titles);
-      bodies: await analyzeText(eventInfo.right.bodies);
+      titles: await analyzeText(eventInfo.right.titles),
+      bodies: await analyzeText(eventInfo.right.bodies)
     }
   };
 
@@ -122,6 +128,14 @@ const getSourcesByBias = async(eventId, bias) => {
 };
 
 module.exports = { analyzeArticle, analyzeEvent };
+
+const test = async() => {
+
+  const result = await analyzeArticle(sampleArticle);
+  console.log(JSON.stringify(result))
+};
+
+
 
 
 

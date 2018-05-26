@@ -1,16 +1,19 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var sentiment = sequelize.define('Sentiment', {
+  var Sentiment = sequelize.define('Sentiment', {
     sentiment: DataTypes.FLOAT,
+    label: DataTypes.STRING,
     fear: DataTypes.FLOAT,
     disgust: DataTypes.FLOAT,
     anger: DataTypes.FLOAT,
     sadness: DataTypes.FLOAT,
-    joy: DataTypes.FLOAT
+    joy: DataTypes.FLOAT,
+    title: DataTypes.STRING,
+    body: DataTypes.STRING
   }, {});
-  sentiment.associate = function(models) {
-    sentiment.hasMany(models.Article);
-    sentiment.hasMany(models.Event)
+  Sentiment.associate = function(models) {
+    Sentiment.belongsToMany(models.Article, {through: 'ArticleSentiment'});
+    Sentiment.belongsToMany(models.Event, {through: 'EventSentiment'});
   };
-  return sentiment;
+  return Sentiment;
 };

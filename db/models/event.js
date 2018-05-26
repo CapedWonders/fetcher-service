@@ -15,7 +15,6 @@ module.exports = (sequelize, DataTypes) => {
     Event.belongsToMany(models.Subcategory, {through: 'EventSubcategory'});
     Event.belongsToMany(models.Concept, {through: 'EventConcept'});
     Event.belongsToMany(models.User, {through: 'UserEvent'});
-    Event.belongsToMany(models.Sentiment);
   };
   return Event;
 };
