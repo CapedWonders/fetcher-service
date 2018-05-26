@@ -16,9 +16,17 @@ const sampleArticle = lambda4.articles.fox[1];
 
 //get emotion data for an article's title or body
 const analyzeArticle = async(articleUri) => {
+  let titleAnalysis = null;
+  let bodyAnalysis = null;
   const article = await db.Article.find({where: {uri: articleUri}});
-  const titleAnalysis = await analyzeText(article.dataValues.title);
-  const bodyAnalysis = await analyzeText(article.dataValues.body);
+
+  analyzeText(article.dataValues.title)
+   .then(res => titleAnalysis = res)
+   .catch(err => console.log(err));
+
+  analyzeText(article.dataValues.body)
+    .then(res => bodyAnalysis = res)
+    .catch(err => console.log(err));
 
   return { titleAnalysis, bodyAnalysis }
 };

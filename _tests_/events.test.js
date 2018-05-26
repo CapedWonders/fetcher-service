@@ -201,6 +201,20 @@ describe('formatSentiment', function() {
    
     done();
   });
+
+  it('should format an event only on positive watson call', function(done) {
+    let badAnalysis = {
+      titleAnalysis: null,
+      bodyAnalysis: null
+    };
+
+    let result1 = formatSentiment(badAnalysis.titleAnalysis, 'title');
+    let result2 = formatSentiment(badAnalysis.bodyAnalysis, 'body');
+
+    expect(result1).not.toBeTruthy();
+    expect(result2).not.toBeTruthy();
+    done();
+  }); 
 });
 
 describe('buildSaveSentiment', function() {
@@ -234,6 +248,23 @@ describe('buildSaveSentiment', function() {
     const sentiments = await savedArticle.article.getSentiments();
     expect(sentiments.length).toBe(0);
     done();
+  });
+
+  it('shoud not save a bad watson call', async function(done) {
+    expect.assertions(2);
+    
+    let badAnalysis = {
+      titleAnalysis: null,
+      bodyAnalysis: null
+    };
+
+    const test1 = await buildSaveSentiment(badAnalysis.titleAnalysis, 'title');
+    const test2 = await buildSaveSentiment(badAnalysis.bodyAnalysis, 'body');
+
+    expect(test1).not.toBeTruthy();
+    expect(test2).not.toBeTruthy();
+    done();
+
   });
 });
 
