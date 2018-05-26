@@ -259,17 +259,21 @@ const extractFormatSource = (article) => {
 };
 
 const formatSentiment = (sentiment, titleOrBody) => {
-  return db.Sentiment.build({
-    sentiment: sentiment.sentiment.document.score,
-    label: sentiment.sentiment.document.label,
-    fear: sentiment.emotion.document.emotion.fear,
-    sadness: sentiment.emotion.document.emotion.sadness,
-    joy: sentiment.emotion.document.emotion.joy,
-    anger: sentiment.emotion.document.emotion.anger,
-    disgust: sentiment.emotion.document.emotion.disgust,
-    title: titleOrBody === 'title' ? true : false,
-    body: titleOrBody === 'body' ? true: false
-  });
+  if (sentiment.sentiment) {
+    return db.Sentiment.build({
+      sentiment: sentiment.sentiment.document.score,
+      label: sentiment.sentiment.document.label,
+      fear: sentiment.emotion.document.emotion.fear,
+      sadness: sentiment.emotion.document.emotion.sadness,
+      joy: sentiment.emotion.document.emotion.joy,
+      anger: sentiment.emotion.document.emotion.anger,
+      disgust: sentiment.emotion.document.emotion.disgust,
+      title: titleOrBody === 'title' ? true : false,
+      body: titleOrBody === 'body' ? true: false
+    });
+  } else {
+    return null;
+  }
 };
 
 // a value between -2 and +2 for easy ranking 
@@ -306,8 +310,12 @@ const updateBiasRating = async(sourceUri, biasRating) => {
 
 const buildSaveSentiment = async(sentimentObj, titleOrBody) => {
   const sentiment = formatSentiment(sentimentObj, titleOrBody);
-  const saved = await sentiment.save();
-  return saved;
+  if (sentiment) {
+    const saved = await sentiment.save();
+    return saved;
+  } else {
+    return null;
+  } 
 };
 
 //saving and associating new articles, events, sources, concepts and categories
@@ -377,10 +385,15 @@ const addArticleAnalysis = async(articleUri) => {
   const title = await buildSaveSentiment(analysis.titleAnalysis, 'title');
   const body = await buildSaveSentiment(analysis.bodyAnalysis, 'body');
 
-  article.addSentiment(title);
-  console.log(`added title sentiment to article ${articleUri}}`);
-  article.addSentiment(body);
-  console.log(`added body sentiment to article ${articleUri}}`);
+  if (title) {
+    article.addSentiment(title);
+    console.log(`added title sentiment to article ${articleUri}}`);
+  }
+
+  if (body) {
+    article.addSentiment(body);
+    console.log(`added body sentiment to article ${articleUri}}`);
+  } 
 };
 
 const buildSaveEvent = async (event) => {
