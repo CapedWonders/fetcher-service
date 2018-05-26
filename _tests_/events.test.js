@@ -8,7 +8,7 @@ const db = require('../db/models/index.js');
 const { associateEventConceptsOrSubcategories, buildSaveConcept, buildSaveSubcategory, buildSaveEvent, formatSubcategory,
   formatConcept, formatEvent, formatArticle, extractReleventEvents, buildSaveArticle, extractFormatSource, associateArticlesNewEvent,
   associateArticleConceptsOrSubcategories, getUnassociatedArticlesBySource, calculateBias,  formatSentiment,
-  buildSaveSentiment, addArticleAnalysis } = require('../helpers/events.js');
+  buildSaveSentiment } = require('../helpers/events.js');
 if (process.env.db_name === "eco_chamber") {
   throw error
 }
