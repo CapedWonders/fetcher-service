@@ -41,7 +41,7 @@ const getArticlesBySource = async(sourceUri, daysAgo) => {
     sourceUri: sourceUri
   });
   const sourceInfo = new SourceInfoFlags({image:true});
-  const articleInfo = new ArticleInfoFlags({image: true, concepts: true, categories: true});
+  const articleInfo = new ArticleInfoFlags({image: true, concepts: true, categories: true bodyLen: -1});
   const returnInfo = new ReturnInfo({articleInfo: articleInfo, sourceInfo: sourceInfo});
   const requestArticlesInfo = new RequestArticlesInfo({page: 1, count: 100, returnInfo: returnInfo});
   q.setRequestedResult(requestArticlesInfo);

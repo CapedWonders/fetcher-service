@@ -1,3 +1,5 @@
+const sampleArticleAnalysis = {"titleAnalysis":{"usage":{"text_units":1,"text_characters":58,"features":2},"sentiment":{"document":{"score":-0.503843,"label":"negative"}},"language":"en","emotion":{"document":{"emotion":{"sadness":0.380185,"joy":0.04483,"fear":0.032471,"disgust":0.328644,"anger":0.226201}}}},"bodyAnalysis":{"usage":{"text_units":1,"text_characters":304,"features":2},"sentiment":{"document":{"score":-0.542702,"label":"negative"}},"language":"en","emotion":{"document":{"emotion":{"sadness":0.691537,"joy":0.044924,"fear":0.045161,"disgust":0.126814,"anger":0.181191}}}}};
+
 const sampleCategories = [
   {
     name: 'Business',
@@ -36401,4 +36403,4 @@ const sampleEvent = {
     "wgt": 1
 };
 
-module.exports = { lambda1All, sampleEvent, articleWithConcepts, lambda1, relevantEvents, lambda2, lambda3, lambda4, sampleCategories };
+module.exports = { sampleArticleAnalysis, lambda1All, sampleEvent, articleWithConcepts, lambda1, relevantEvents, lambda2, lambda3, lambda4, sampleCategories };
