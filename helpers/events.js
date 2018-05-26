@@ -373,7 +373,7 @@ const associateArticlesNewEvent = async (eventUri) => {
 
 const addArticleAnalysis = async(articleUri) => {
   const article = await db.Article.find({where: {uri: articleUri}});
-  const analysis = await analyzeArticle(article);
+  const analysis = await analyzeArticle(articleUri);
   const title = await buildSaveSentiment(analysis.titleAnalysis, 'title');
   const body = await buildSaveSentiment(analysis.bodyAnalysis, 'body');
 

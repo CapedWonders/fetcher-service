@@ -129,11 +129,8 @@ const getSourcesByBias = async(eventId, bias) => {
 
 module.exports = { analyzeArticle, analyzeEvent };
 
-const test = async() => {
 
-  const result = await analyzeArticle(sampleArticle);
-  console.log(JSON.stringify(result))
-};
+
 
 
 
