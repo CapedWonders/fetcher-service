@@ -20,13 +20,19 @@ const analyzeArticle = async(articleUri) => {
   let bodyAnalysis = null;
   const article = await db.Article.find({where: {uri: articleUri}});
 
-  analyzeText(article.dataValues.title)
-   .then(res => titleAnalysis = res)
-   .catch(err => console.log(err));
+  const title = await analyzeText(article.dataValues.title)
+    .catch(e => console.error('Error when doingSomething', e.message));
 
-  analyzeText(article.dataValues.body)
-    .then(res => bodyAnalysis = res)
-    .catch(err => console.log(err));
+  if (title) { 
+    titleAnalysis = title;
+  }
+
+  const body = await analyzeText(article.dataValues.body)
+    .catch(e => console.error('Error when doingSomething', e.message));
+
+  if (body) {
+    bodyAnalysis = body;
+  }
 
   return { titleAnalysis, bodyAnalysis }
 };
