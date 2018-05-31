@@ -259,7 +259,7 @@ const extractFormatSource = (article) => {
 };
 
 const formatSentiment = (sentiment, titleOrBody) => {
-  if (sentiment) {
+  if (sentiment && !sentiment.warnings) {
     return db.Sentiment.build({
       sentiment: sentiment.sentiment.document.score,
       label: sentiment.sentiment.document.label,
