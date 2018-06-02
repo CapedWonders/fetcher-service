@@ -153,8 +153,10 @@ const extractReleventEvents = (urisObj) => {
   let rightAndCenter = new Set([...rightOrFarRight].filter(x => centerAny.has(x)));
   let leftAndCenter = new Set([...leftOrFarLeft].filter(x => centerAny.has(x)));
   let leftRightAndCenter = new Set([...rightAndLeft].filter(x => centerAny.has(x)));
+  let rightAndFarRight = new Set([...rightAny].filter(x => farRightAny.has(x)));
+  let leftAndFarLeft = new Set([...leftAny].filter(x => farLeftAny.has(x)));
 
-  return [...rightAndLeft];
+  return [...rightAndLeft, ...rightAndFarRight, ...leftAndFarLeft];
 };
 
 //check to see if any previously unsaved events are now relevant
@@ -259,7 +261,7 @@ const extractFormatSource = (article) => {
 };
 
 const formatSentiment = (sentiment, titleOrBody) => {
-  if (sentiment) {
+  if (sentiment && !sentiment.warnings) {
     return db.Sentiment.build({
       sentiment: sentiment.sentiment.document.score,
       label: sentiment.sentiment.document.label,
@@ -581,6 +583,7 @@ const dailyArticleFetch = async() => {
   console.log('fetched all articles!', moment());
 
   db.sequelize.close();
+  process.exit();
 };
 
 //fetch additional event info for any newly relevant events from the last 5 days
@@ -590,6 +593,7 @@ const dailyEventsFetch = async(daysAgo) => {
   await getEventInfo(newlyRelevant);
   console.log('newly relevant events fetched for', moment());
   db.sequelize.close();
+  process.exit();
 };
 
 module.exports = {
