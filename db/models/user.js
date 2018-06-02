@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = function(models) {
     // associations can be defined here
     User.belongsToMany(models.Event, {through: 'UserEvent'});
+    User.belongsToMany(models.Rating, {through: 'UserRating'});
   };
   return User;
 };
