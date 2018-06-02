@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     Article.belongsToMany(models.Subcategory, {through: 'ArticleSubcategory'});
     Article.belongsToMany(models.Concept, {through: 'ArticleConcept'});
     Article.belongsToMany(models.Sentiment, {through: 'ArticleSentiment'});
+    Article.hasMany(models.Rating);
   };
   return Article;
 };

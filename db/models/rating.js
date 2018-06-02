@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     sourceTrust: DataTypes.INTEGER
   }, {});
   Rating.associate = function(models) {
-    // associations can be defined here
+    Rating.belongsTo(models.Article);
   };
   return Rating;
 };
