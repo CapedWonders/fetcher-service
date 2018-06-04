@@ -15,6 +15,7 @@ const getEventInfo = async(uriList) => {
   let unsavedEvents = [];
   const q = QueryEvents.initWithEventUriList(uriList);
   const response = await er.execQuery(q);
+  console.log(response);
   return response.events.results;
 };
 
