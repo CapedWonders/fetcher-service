@@ -519,7 +519,7 @@ const getArticlesBySource = async(sourceUri, daysAgo) => {
   const uris = response.data.uris;
   
   //sometimes ER returns something that is not an array, causing errors
-  if (Array.isArray(articlces)) {
+  if (Array.isArray(articles)) {
     for (const article of articles) {
       //ignore if it has not yet been associated by Event Registry to an event
       if (article.eventUri) {
