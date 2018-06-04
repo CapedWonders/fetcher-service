@@ -517,25 +517,28 @@ const getArticlesBySource = async(sourceUri, daysAgo) => {
   const response = await axios.post(articlesSingleSourceLambda, { sourceUri, daysAgo });
   const articles = response.data.articles;
   const uris = response.data.uris;
-
-  for (const article of articles) {
-    //ignore if it has not yet been associated by Event Registry to an event
-    if (article.eventUri) {
-      const saved = await buildSaveArticle(article);
-      const event = await db.Event.find({where: {uri: article.eventUri}});
-      //only associate concepts and categories if we have not done so before
-      if (saved.new) {       
-        await associateArticleConceptsOrSubcategories(article.concepts, 'concept', article.uri);
-        await associateArticleConceptsOrSubcategories(article.categories, 'subcategory', article.uri);
-        if (event) {
-          await addArticleAnalysis(article.uri);
-          await event.addArticle(saved.article);
-          console.log(`Article ${saved.article.dataValues.uri} added to event ${event.dataValues.id}`);         
-        }       
-      }          
-    }      
-  }
   
+  //sometimes ER returns something that is not an array, causing errors
+  if (Array.isArray(articlces)) {
+    for (const article of articles) {
+      //ignore if it has not yet been associated by Event Registry to an event
+      if (article.eventUri) {
+        const saved = await buildSaveArticle(article);
+        const event = await db.Event.find({where: {uri: article.eventUri}});
+        //only associate concepts and categories if we have not done so before
+        if (saved.new) {       
+          await associateArticleConceptsOrSubcategories(article.concepts, 'concept', article.uri);
+          await associateArticleConceptsOrSubcategories(article.categories, 'subcategory', article.uri);
+          if (event) {
+            await addArticleAnalysis(article.uri);
+            await event.addArticle(saved.article);
+            console.log(`Article ${saved.article.dataValues.uri} added to event ${event.dataValues.id}`);         
+          }       
+        }          
+      }      
+    }
+  }
+
   console.log('articles saved');
   return { articles, uris }
 };
