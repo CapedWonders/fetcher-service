@@ -238,10 +238,11 @@ const formatSubcategory = (subcategory) => {
 };
 
 const formatArticle = (article) => {
+  const strippedTitle = article.title.split('|')[0];
   return db.Article.build({
     uri: article.uri,
     url: article.url,
-    title: article.title,
+    title: strippedTitle,
     body: article.body,
     date: moment(article.date, "YYYY-MM-DD"),
     eventUri: article.eventUri,
