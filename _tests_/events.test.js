@@ -101,7 +101,7 @@ describe('formatSubcategory', function() {
     return db.clearDB();
   });
 
-  it.only('should return an instance of sequelize subcategory model', function(done) {
+  it('should return an instance of sequelize subcategory model', function(done) {
     let result = formatSubcategory(lambda2[0].categories[0]);
 
     expect(result).toBeInstanceOf(db.Subcategory);
@@ -689,6 +689,31 @@ describe('formatArticle', function() {
     expect(result).not.toHaveProperty('isDuplicate');
     expect(result).not.toHaveProperty('source');
     done();
+  });
+
+  it('should strip alternative or extra title elements', function(done) {
+    let result = formatArticle({
+      "uri": "863375045",
+      "date": "2018-05-06",
+      "url": "http://www.foxnews.com/entertainment/2018/05/06/john-cena-and-nikki-bella-share-inspirational-posts-with-fans-on-what-would-have-been-their-wedding-day.html",
+      "title": "John Cena and Nikki Bella share inspirational posts with fans on what would have been their wedding day | Breitbart",
+      "body": "Just days before their wedding, WWE stars John Cena and Nikki Bella called it quits. What went wrong between them? Insiders say Cena got cold feet.\n\nBoth John Cena and Nikki Bella shared inspirational messages with their followers on social media this Saturday, the day that was supposed to be their ...",
+      "source": {
+        "uri": "foxnews.com",
+        "dataType": "news",
+        "title": "Fox News",
+        "image": "http://pbs.twimg.com/profile_images/1296339574/foxnews-avatar_bigger.png",
+        "thumbImage": "http://pbs.twimg.com/profile_images/1296339574/foxnews-avatar_mini.png",
+        "favicon": "http://WWw.foxnews.com/global.fncstatic.com/static/v/fn-hp/img/favicon.ico"
+      },
+      "image": "http://a57.foxnews.com/media2.foxnews.com/BrightCove/694940094001/2018/04/17/0/0/694940094001_5771924652001_5771923878001-vs.jpg?ve=1",
+      "eventUri": "eng-3951344",
+      "wgt": 263346060
+    });
+
+    expect(result.title).toBe('John Cena and Nikki Bella share inspirational posts with fans on what would have been their wedding day ');
+    done();
+
   });
 });
 
