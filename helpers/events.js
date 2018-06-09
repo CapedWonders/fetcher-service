@@ -584,6 +584,9 @@ const dailyArticleFetch = async() => {
 
   const oneDaysAgo = await getArticlesAllSources(1);
   console.log("ONE DAY AGO ARTICLES FETCHED!");
+
+  const today = await getArticlesAllSources(0);
+  console.log("TODAY'S ARTICLES FETCHED!")
   console.log('fetched all articles!', moment());
 
   db.sequelize.close();
